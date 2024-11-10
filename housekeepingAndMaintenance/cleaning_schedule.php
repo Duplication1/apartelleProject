@@ -83,9 +83,9 @@
                         <option value='Dirty'" . ($row['status'] == 'Dirty' ? ' selected' : '') . ">Dirty</option>
                         <option value='Out of Order'" . ($row['status'] == 'Out of Order' ? ' selected' : '') . ">Out of Order</option>
                     </select>
-                    <button class='btn btn-primary btn-update' style='margin-left: 5px;'>Update</button>
-                    <td style='display:none;' class='room-id'>" . htmlspecialchars($row['id']) . "</td>
-                  </td>";
+                    <button class='btn btn-primary btn-update' data-id='" . $row['id'] . "' style='margin-left: 5px;'>Update</button>
+                </td>";
+                
             
                     echo "</tr>";
                 }

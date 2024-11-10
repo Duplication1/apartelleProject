@@ -14,14 +14,17 @@ if ($conn->connect_error) {
 }
 
 // Handle POST data
+// Handle POST data
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Update status for a specific room
     if (isset($_POST['id'], $_POST['status'])) {
         updateRoomStatus($conn, $_POST['id'], $_POST['status']);
+        exit; // Ensure no further code is executed after response
     }
     // Update all cleaning dates
     elseif (isset($_POST['newDate'])) {
         updateAllCleaningDates($conn, $_POST['newDate']);
+        exit; // Ensure no further code is executed after response
     }
 }
 
@@ -44,12 +47,17 @@ function updateRoomStatus($conn, $id, $status) {
         if ($stmt->execute()) {
             echo json_encode(['success' => true]);
         } else {
+            // Optional: Log error (make sure to disable in production or log to a file)
+            error_log('Failed to execute statement: ' . $stmt->error);
             echo json_encode(['success' => false, 'error' => 'Failed to execute statement']);
         }
     } else {
+        // Optional: Log error (make sure to disable in production or log to a file)
+        error_log('Failed to prepare statement: ' . $conn->error);
         echo json_encode(['success' => false, 'error' => 'Failed to prepare statement']);
     }
 }
+
 
 function updateAllCleaningDates($conn, $newDate) {
     $sql = "UPDATE cleaning_schedules SET cleaning_date = ?";
@@ -60,10 +68,15 @@ function updateAllCleaningDates($conn, $newDate) {
         if ($stmt->execute()) {
             echo json_encode(['success' => true]);
         } else {
+            // Optional: Log error (make sure to disable in production or log to a file)
+            error_log('Failed to execute statement: ' . $stmt->error);
             echo json_encode(['success' => false, 'error' => 'Failed to execute statement']);
         }
     } else {
+        // Optional: Log error (make sure to disable in production or log to a file)
+        error_log('Failed to prepare statement: ' . $conn->error);
         echo json_encode(['success' => false, 'error' => 'Failed to prepare statement']);
     }
 }
+
 ?>
