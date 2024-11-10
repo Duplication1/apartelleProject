@@ -34,9 +34,13 @@
                 <th>Room No.</th>
                 <th>Room Type</th>
                 <th>
-                    Date
-                    <input type="datetime-local" id="updateDateInput" class="form-control mt-1" style="width: auto; display: inline-block;" />
-                    <button id="btn-update-all" class="btn btn-primary btn-sm mt-1" style="margin-left: 5px;">Update All</button>
+                <form id="updateDateForm" action="housekeepingAndMaintenance/update_schedule.php" method="POST">
+    <div class="d-flex align-items-center">
+        <label for="updateDateInput" class="mr-2">Date:</label>
+        <input type="datetime-local" id="updateDateInput" name="newDate" class="form-control mt-1" style="width: auto; display: inline-block;" />
+        <button type="submit" id="btn-update-all" class="btn-update btn-sm mt-1" style="margin-left: 5px;">Update All</button>
+    </div>
+</form>
                 </th>
                 <th>Assignee</th>
                 <th>Status</th>

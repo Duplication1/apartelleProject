@@ -282,53 +282,57 @@ function updateButton(value) {
 </script>
 
 <script>
-   $(document).ready(function() {
+$(document).ready(function() {
+    // Initialize DataTable
     $('#example').DataTable();
 
-    // Update all cleaning dates when the "Update All Dates" button is clicked
+    // Handle individual status update
+    $(document).on('click', '.btn-update', function() {
+        var status = $(this).closest('tr').find('.status-dropdown').val();
+        var roomId = $(this).data('id');
+
+        $.ajax({
+            url: 'housekeepingAndMaintenance/update_schedule.php',  // URL to your PHP backend that handles the status update
+            method: 'POST',
+            data: {
+                id: roomId,
+                status: status
+            },
+            success: function(response) {
+                alert('Status updated successfully!');
+                location.reload();  // Reload the page to show the updated data
+            },
+            error: function(xhr, status, error) {
+                alert('Error: ' + error);
+            }
+        });
+    });
+
+    // Handle update all dates
     $('#btn-update-all').on('click', function() {
-        var newDate = $('#updateDateInput').val(); // Get the new date
+        var newDate = $('#updateDateInput').val();
 
         if (!newDate) {
-            alert('Please select a date before updating.');
+            alert('Please select a date before updating all rooms.');
             return;
         }
 
         $.ajax({
-            url: 'housekeepingAndMaintenance/update_schedule.php',
-            type: 'POST',
-            data: { newDate: newDate }, // Send the new date
-            success: function(response) {
-                console.log('All dates updated:', response);
-                // Optionally, refresh the table or notify the user
-                // Reload the table data or update the UI here if needed
+            url: 'housekeepingAndMaintenance/update_schedule.php',  // URL to your PHP backend that handles updating all dates
+            method: 'POST',
+            data: {
+                newDate: newDate
             },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.error('AJAX Error:', textStatus, errorThrown);
+            success: function(response) {
+                alert('All cleaning dates updated successfully!');
+                location.reload();  // Reload the page to show the updated data
+            },
+            error: function(xhr, status, error) {
+                alert('Error: ' + error);
             }
         });
     });
-}); 
-
-
-        $(document).on('click', '.btn-update', function() {
-    var selectedStatus = $(this).closest('td').find('.status-dropdown').val(); // Get selected status
-    var id = $(this).closest('tr').find('.room-id').text(); // Get the ID from the hidden cell
-    $.ajax({
-        url: 'housekeepingAndMaintenance/update_schedule.php',
-        type: 'POST',
-        data: { id: id, status: selectedStatus }, // Send ID and status
-        success: function(response) {
-            console.log('Status updated for room ID ' + id + ':', response);
-            // Optionally update UI or notify the user
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            console.error('AJAX Error:', textStatus, errorThrown);
-        }
-    });
 });
-
-
 </script>
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
