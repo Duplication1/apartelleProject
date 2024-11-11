@@ -42,91 +42,88 @@
                         </div>
                     </form>
                 </th>
-                <th>Assignee</th>
-                <th>Status</th>
+                <th>Assignee</th> <!-- Assignee Column -->
+                <th>Status</th> <!-- Status Column -->
             </tr>
         </thead>
         <tbody>
         <?php
-// Database connection
-$host = 'localhost';
-$db = 'apartelle_db';
-$user = 'root';
-$pass = '';
+        // Database connection
+        $host = 'localhost';
+        $db = 'apartelle_db';
+        $user = 'root';
+        $pass = '';
 
-// Create connection
-$conn = new mysqli($host, $user, $pass, $db);
+        // Create connection
+        $conn = new mysqli($host, $user, $pass, $db);
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Fetch data from the cleaning_schedules table, including the assignee's name
-$sql = "
-    SELECT 
-        cs.id, 
-        cs.room_number, 
-        cs.room_type, 
-        cs.cleaning_date, 
-        CONCAT(e.firstname, ' ', e.lastname) AS assignee_name, 
-        cs.status, 
-        cs.assignee
-    FROM cleaning_schedules cs
-    LEFT JOIN employee_tbl e ON cs.assignee = e.employee_id
-";
-$result = $conn->query($sql);
-
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        echo "<tr>";
-        echo "<td style='display:none;'>" . htmlspecialchars($row['id']) . "</td>"; // Hidden ID
-        echo "<td>" . htmlspecialchars($row['room_number']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['room_type']) . "</td>";
-        echo "<td class='date-cell'>" . htmlspecialchars($row['cleaning_date']) . "</td>";
-
-        // Display Assignee's Name (from cleaning_schedules)
-        echo "<td>" . htmlspecialchars($row['assignee_name']) . "</td>";  // Assignee's name now correctly displayed
-
-        // Status dropdown (status query remains untouched)
-        echo "<td class='status-cell'>
-        <select class='form-select status-dropdown'>
-            <option value='In Progress'" . ($row['status'] == 'In Progress' ? ' selected' : '') . ">In Progress</option>
-            <option value='Clean'" . ($row['status'] == 'Clean' ? ' selected' : '') . ">Clean</option>
-            <option value='Dirty'" . ($row['status'] == 'Dirty' ? ' selected' : '') . ">Dirty</option>
-            <option value='Out of Order'" . ($row['status'] == 'Out of Order' ? ' selected' : '') . ">Out of Order</option>
-        </select>
-        <button class='btn btn-primary btn-update' data-id='" . $row['id'] . "' style='margin-left: 5px;'>Update</button>
-        </td>";
-
-        // Fetch available cleaners for the dropdown list **inside the loop** (to ensure each row gets its own options)
-        $cleanersSql = "SELECT employee_id, CONCAT(firstname, ' ', lastname) AS name FROM employee_tbl WHERE job = 'Cleaner'";
-        $cleanersResult = $conn->query($cleanersSql);
-
-        // Display the assignee dropdown for each row
-        echo "<td>
-            <select class='form-select assignee-dropdown' data-schedule-id='" . $row['id'] . "'>
-            <option value=''>Select Assignee</option>";
-
-        // Check if there are any cleaners available and populate the dropdown
-        if ($cleanersResult->num_rows > 0) {
-            while ($cleaner = $cleanersResult->fetch_assoc()) {
-                $selected = ($row['assignee'] == $cleaner['employee_id']) ? ' selected' : '';
-                echo "<option value='" . $cleaner['employee_id'] . "'$selected>" . htmlspecialchars($cleaner['name']) . "</option>";
-            }
+        // Check connection
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
         }
 
-        echo "</select></td>";
-        echo "</tr>";
-    }
-} else {
-    echo "<tr><td colspan='5'>No records found</td></tr>";
-}
+        // Fetch data from the cleaning_schedules table, including the assignee's name
+        $sql = "
+            SELECT 
+                cs.id, 
+                cs.room_number, 
+                cs.room_type, 
+                cs.cleaning_date, 
+                CONCAT(e.firstname, ' ', e.lastname) AS assignee_name, 
+                cs.status, 
+                cs.assignee
+            FROM cleaning_schedules cs
+            LEFT JOIN employee_tbl e ON cs.assignee = e.employee_id
+        ";
+        $result = $conn->query($sql);
 
-// Close the connection
-$conn->close();
-?>
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                echo "<tr>";
+                echo "<td style='display:none;'>" . htmlspecialchars($row['id']) . "</td>"; // Hidden ID
+                echo "<td>" . htmlspecialchars($row['room_number']) . "</td>";
+                echo "<td>" . htmlspecialchars($row['room_type']) . "</td>";
+                echo "<td class='date-cell'>" . htmlspecialchars($row['cleaning_date']) . "</td>";
 
+                // Assignee dropdown is moved to the "Assignee" column now
+                echo "<td>
+                    <select class='form-select assignee-dropdown' data-schedule-id='" . $row['id'] . "'>
+                    <option value=''>Select Assignee</option>";
+
+                // Fetch available cleaners for the dropdown list **inside the loop** (to ensure each row gets its own options)
+                $cleanersSql = "SELECT employee_id, CONCAT(firstname, ' ', lastname) AS name FROM employee_tbl WHERE job = 'Cleaner'";
+                $cleanersResult = $conn->query($cleanersSql);
+
+                // Check if there are any cleaners available and populate the dropdown
+                if ($cleanersResult->num_rows > 0) {
+                    while ($cleaner = $cleanersResult->fetch_assoc()) {
+                        $selected = ($row['assignee'] == $cleaner['employee_id']) ? ' selected' : '';
+                        echo "<option value='" . $cleaner['employee_id'] . "'$selected>" . htmlspecialchars($cleaner['name']) . "</option>";
+                    }
+                }
+
+                echo "</select></td>";
+
+                // Status dropdown is now moved to the "Status" column
+                echo "<td class='status-cell'>
+                    <select class='form-select status-dropdown'>
+                        <option value='In Progress'" . ($row['status'] == 'In Progress' ? ' selected' : '') . ">In Progress</option>
+                        <option value='Clean'" . ($row['status'] == 'Clean' ? ' selected' : '') . ">Clean</option>
+                        <option value='Dirty'" . ($row['status'] == 'Dirty' ? ' selected' : '') . ">Dirty</option>
+                        <option value='Out of Order'" . ($row['status'] == 'Out of Order' ? ' selected' : '') . ">Out of Order</option>
+                    </select>
+                    <button class='btn btn-primary btn-update' data-id='" . $row['id'] . "' style='margin-left: 5px;'>Update</button>
+                </td>";
+
+                echo "</tr>";
+            }
+        } else {
+            echo "<tr><td colspan='5'>No records found</td></tr>";
+        }
+
+        // Close the connection
+        $conn->close();
+        ?>
 
         </tbody>
     </table>
@@ -137,9 +134,7 @@ $conn->close();
 <script src="https://cdn.datatables.net/2.1.8/js/dataTables.bootstrap5.js"></script>
 
 <script>
-    
-
-      
+// Your JavaScript or AJAX code here, e.g., to handle updates, etc.
 </script>
 
 </body>
