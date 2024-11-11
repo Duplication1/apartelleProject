@@ -365,6 +365,111 @@ $(document).ready(function() {
 });
 
 
+</script>
+<script>
+  $(document).ready(function() {
+    // Initialize DataTable
+    $('#example').DataTable();
+
+    // Handle individual status update (maintenance tasks)
+    $(document).on('click', '.btn-update-maintenance', function() {
+        var status = $(this).closest('tr').find('.status-dropdown').val();
+        var taskId = $(this).data('id');  // Fetch maintenance schedule ID
+
+        // Make sure the status is selected
+        if (!status) {
+            alert('Please select a status.');
+            return;
+        }
+
+        $.ajax({
+            url: 'housekeepingAndMaintenance/update_maintenance_schedule.php',  // PHP backend to handle the status update for maintenance
+            method: 'POST',
+            data: {
+                id: taskId,    // Maintenance task ID to update
+                status: status // New status to set
+            },
+            success: function(response) {
+                var responseData = JSON.parse(response);  // Parse the JSON response
+
+                if (responseData.success) {
+                    alert('Status updated successfully!');
+                    location.reload();  // Reload the page to show the updated status
+                } else {
+                    alert('Error: ' + responseData.error);  // Show error message from backend
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('Error: ' + error);  // Alert if there's an issue with the AJAX request
+            }
+        });
+    });
+
+    // Handle update all maintenance dates
+    $('#btn-update-all-maintenance').on('click', function() {
+        var newDate = $('#updateDateInputMaintenance').val();  // Get the new date from the input
+
+        if (!newDate) {
+            alert('Please select a date before updating all tasks.');
+            return;
+        }
+
+        $.ajax({
+            url: 'housekeepingAndMaintenance/update_maintenance_schedule.php',  // PHP backend to handle bulk date update for maintenance tasks
+            method: 'POST',
+            data: {
+                newDate: newDate  // New date for updating all maintenance schedules
+            },
+            success: function(response) {
+                var responseData = JSON.parse(response);  // Parse the JSON response
+
+                if (responseData.success) {
+                    alert('All maintenance dates updated successfully!');
+                    location.reload();  // Reload the page to reflect the changes
+                } else {
+                    alert('Error: ' + responseData.error);  // Show error message from backend
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('Error: ' + error);  // Alert if there's an issue with the AJAX request
+            }
+        });
+    });
+
+    // Handle assignee update for maintenance tasks
+    $(document).on('change', '.assignee-dropdown-maintenance', function() {
+        var schedule_id = $(this).data('schedule-id');  // Get the schedule ID from the data attribute
+        var assignee_id = $(this).val();  // Get the selected assignee ID from the dropdown
+
+        // Make sure assignee_id is not empty
+        if (assignee_id) {
+            $.ajax({
+                url: 'housekeepingAndMaintenance/update_maintenance_assignee.php',  // PHP script to update the assignee for maintenance tasks
+                type: 'POST',
+                data: {
+                    schedule_id: schedule_id,
+                    assignee_id: assignee_id
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        alert(response.message);  // Show success message
+                    } else {
+                        alert(response.message);  // Show error message
+                    }
+                },
+                error: function() {
+                    alert('An error occurred while updating the assignee.');
+                }
+            });
+        } else {
+            alert("Please select a valid assignee.");
+        }
+    });
+});
+
+
+
 </script>   
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
