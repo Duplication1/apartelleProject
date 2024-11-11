@@ -3,111 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.bootstrap5.css">
-
-
-    <link rel="stylesheet" href="style.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <style>
-        /* Add some basic styling for the table */
-        .stock-levels-table {
-            width: 100%;
-            border-collapse: collapse; /* Combine borders */
-            margin-top: 20px; /* Space between buttons and table */
-        }
-        .stock-levels-table th, .stock-levels-table td {
-            padding: 12px;
-            border: 1px solid #ddd; /* Light grey border */
-            text-align: left; /* Align text to the left */
-        }
-        .stock-levels-table th {
-            background-color: #f2f2f2; /* Light grey background for header */
-        }
-        .stock-levels-table tr:hover {
-            background-color: #f5f5f5; /* Change background color on hover */
-        }
-    </style>
+    <title>Maintenance and Cleaning Schedules</title> 
 </head>
 <body>
 
-<!-- Table for displaying cleanng schedules -->
 <div class="container pt-5">
-<table id="example" class="table table-striped" style="width:100%">
+    <table id="example" class="table table-striped" style="width:100%">
         <thead>
             <tr>
-                <th> ASSIGNEE </th>
-                <th> DAY </th>
-                <th> TASK </th>
+                <th>ASSIGNEE</th>
+                <th>DAY</th>
+                <th>TASK TYPE</th> <!-- TASK TYPE column -->
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td> Qweqwe </td>
-                <td> Monday </td>
-                <td> Lorem ipsum dolor sit amet. </td>
-            </tr>
-            <tr>
-                <td> Qweqwe </td>
-                <td> Monday </td>
-                <td> Lorem ipsum dolor sit amet. </td>
-            </tr>
-            <tr>
-                <td> Qweqwe </td>
-                <td> Monday </td>
-                <td> Lorem ipsum dolor sit amet. </td>
-            </tr>
-            <tr>
-                <td> Qweqwe </td>
-                <td> Monday </td>
-                <td> Lorem ipsum dolor sit amet. </td>
-            </tr>
-            <tr>
-                <td> Qweqwe </td>
-                <td> Monday </td>
-                <td> Lorem ipsum dolor sit amet. </td>
-            </tr>
-            <tr>
-                <td> Qweqwe </td>
-                <td> Monday </td>
-                <td> Lorem ipsum dolor sit amet. </td>
-            </tr>
-            <tr>
-                <td> Qweqwe </td>
-                <td> Monday </td>
-                <td> Lorem ipsum dolor sit amet. </td>
-            </tr>
-            <tr>
-                <td> Qweqwe </td>
-                <td> Monday </td>
-                <td> Lorem ipsum dolor sit amet. </td>
-            </tr>
+            <?php
+            // Database connection
+            $host = 'localhost';
+            $db = 'apartelle_db';
+            $user = 'root';
+            $pass = '';
 
+            // Create connection
+            $conn = new mysqli($host, $user, $pass, $db);
+
+            // Check connection
+            if ($conn->connect_error) {
+                die("Connection failed: " . $conn->connect_error);
+            }
+
+            // Fetch data from both maintenance_schedules and cleaning_schedules tables
+            $sql = "
+                SELECT 
+                    ms.id AS task_id, 
+                    ms.scheduled_date AS date, 
+                    CONCAT(e.firstname, ' ', e.lastname) AS assignee_name, 
+                    e.job AS assignee_job
+                FROM maintenance_schedules ms
+                LEFT JOIN employee_tbl e ON ms.assignee = e.employee_id
+
+                UNION
+
+                SELECT 
+                    cs.id AS task_id, 
+                    cs.cleaning_date AS date, 
+                    CONCAT(e.firstname, ' ', e.lastname) AS assignee_name, 
+                    e.job AS assignee_job
+                FROM cleaning_schedules cs
+                LEFT JOIN employee_tbl e ON cs.assignee = e.employee_id
+            ";
+
+            $result = $conn->query($sql);
+
+            // Check if there are results and display them in the table
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    // Get the scheduled day from the scheduled date (assuming it's a DATETIME format)
+                    $day = date('l', strtotime($row['date']));
+                    // Determine the task type based on the job
+                    $task_type = ($row['assignee_job'] == 'Cleaner') ? 'Cleaning' : 'Maintenance';
+                    
+                    echo "<tr>";
+                    echo "<td>" . htmlspecialchars($row['assignee_name']) . "</td>";
+                    echo "<td>" . htmlspecialchars($day) . "</td>";
+                    echo "<td>" . htmlspecialchars($task_type) . "</td>"; // Display task type (Cleaning or Maintenance)
+                    echo "</tr>";
+                }
+            } else {
+                echo "<tr><td colspan='3'>No records found</td></tr>";
+            }
+
+            // Close the connection
+            $conn->close();
+            ?>
         </tbody>
-        <tfoot>
-        <tr>
-                <td> Qweqwe </td>
-                <td> Monday </td>
-                <td> Lorem ipsum dolor sit amet. </td>
-            </tr>
-        </tfoot>
     </table>
 </div>
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
-<script src="https://cdn.datatables.net/2.1.8/js/dataTables.bootstrap5.js"></script>
 
-<script src="script.js"></script>
 
 <script>
 new DataTable('#example');
