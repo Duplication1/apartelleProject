@@ -332,8 +332,40 @@ $(document).ready(function() {
             }
         });
     });
+
+    $(document).on('change', '.assignee-dropdown', function() {
+    var schedule_id = $(this).data('schedule-id');  // Get the schedule ID from the data attribute
+    var assignee_id = $(this).val();  // Get the selected assignee ID from the dropdown
+
+    // Make sure assignee_id is not empty
+    if (assignee_id) {
+        $.ajax({
+            url: 'housekeepingAndMaintenance/update_assignee.php',  // PHP script to update the assignee
+            type: 'POST',
+            data: {
+                schedule_id: schedule_id,
+                assignee_id: assignee_id
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.status === 'success') {
+                    alert(response.message);  // Show success message
+                } else {
+                    alert(response.message);  // Show error message
+                }
+            },
+            error: function() {
+                alert('An error occurred while updating the assignee.');
+            }
+        });
+    } else {
+        alert("Please select a valid assignee.");
+    }
 });
-</script>
+});
+
+
+</script>   
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
