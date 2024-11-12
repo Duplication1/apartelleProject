@@ -7,8 +7,8 @@
 </head>
 <body>
 
-<div class="container pt-5">
-    <table id="example" class="table table-striped" style="width:100%">
+<div class="container pt-5 ">
+    <table id="example" class="table table-striped task-assignment-table" style="width:100%">
         <thead>
             <tr>
                 <th>ASSIGNEE</th>

@@ -777,3 +777,43 @@ th{
 .fire-exit h5, .fire-procedure h5{
     padding-left: 30px;
 }
+
+.task-assignment-table tr, .task-assignment-table td{
+    text-align: center;
+}
+
+.table-cleaning tr, .table-maintenance tr{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+}
+
+.table-cleaning td, .table-maintenance td{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.table-cleaning th, .table-maintenance th{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-cleaning-date, .btn-maintenance-date{
+    padding: 7px 4px 7px 4px;
+    background-color: var(--lesser-main-color);
+    border: 0;
+    color: var(--white);
+    border-radius: 4px;
+}
+
+#updateDateInput, #updateDateInputMaintenance{
+    margin-left: 10px;
+}
+
+.btn-cleaning-update, .btn-maintenance{
+    background-color: var(--lesser-main-color);
+    border: 0;
+    color: var(--white);
+    border-radius: 4px;
+    padding: 6px 4px 6px 4px;
+}

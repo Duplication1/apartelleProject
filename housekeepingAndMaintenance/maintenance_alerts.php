@@ -28,7 +28,7 @@
 <body>
 
 <div class="container pt-5">
-<table id="example" class="table table-striped" style="width:100%">
+<table id="example" class="table table-striped table-maintenance" style="width:100%">
         <thead>
             <tr>
                 <th>Issue</th>
@@ -37,8 +37,8 @@
                     <form id="updateDateForm" action="housekeepingAndMaintenance/update_maintenance_schedule.php" method="POST">
                         <div class="d-flex align-items-center">
                             <label for="updateDateInputMaintenance" class="mr-2">Date:</label>
-                            <input type="datetime-local" id="updateDateInputMaintenance" name="newDate" class="form-control mt-1" style="width: auto; display: inline-block;" />
-                            <button type="submit" id="btn-update-all-maintenance" class="btn-update btn-sm mt-1" style="margin-left: 5px;">Update All</button>
+                            <input type="datetime-local" id="updateDateInputMaintenance" name="newDate" class="form-control mt-1" style="width: 45px;" />
+                            <button type="submit" id="btn-update-all-maintenance" class="btn-update btn-sm mt-1 btn-maintenance-date" style="margin-left: 5px;">Update All</button>
                         </div>
                     </form>
                 </th>
@@ -112,7 +112,7 @@
                         <option value='Completed'" . ($row['status'] == 'Completed' ? ' selected' : '') . ">Completed</option>
                         <option value='On Hold'" . ($row['status'] == 'On Hold' ? ' selected' : '') . ">On Hold</option>
                     </select>
-                    <button class='btn btn-primary btn-update btn-maintenance' data-id='" . $row['id'] . "' style='margin-left: 5px;'>Update</button>
+                    <button class='btn-update btn-maintenance' data-id='" . $row['id'] . "' style='margin-left: 5px;'>Update</button>
                 </td>";
 
                 echo "</tr>";
