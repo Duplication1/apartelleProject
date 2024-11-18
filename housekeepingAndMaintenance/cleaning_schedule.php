@@ -38,7 +38,7 @@
                         <div class="d-flex align-items-center">
                             <label for="updateDateInput" class="mr-2">Date:</label>
                             <input type="datetime-local" id="updateDateInput" name="newDate" class="form-control mt-1" style="width: 45px; display: inline-block;" />
-                            <button type="submit" id="btn-update-all" class="btn-update btn-sm mt-1 btn-cleaning-date" style="margin-left: 5px;">Update All</button>
+                            <button type="submit" id="btn-update-all" class="btn-update-schedule btn-update btn-sm mt-1 btn-cleaning-date" style="margin-left: 5px;">Update All</button>
                         </div>
                     </form>
                 </th>

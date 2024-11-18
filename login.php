@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = $_POST['password'];
 
     // Prepare the SQL statement to prevent SQL injection
-    $stmt = $conn->prepare("SELECT employee_id, pass, is_first_login FROM user_tbl WHERE username = ?");
+    $stmt = $conn->prepare("SELECT employee_id, pass, is_first_login, job FROM user_tbl WHERE username = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $stmt->store_result();
@@ -21,24 +21,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Check if a user exists with the provided username
     if ($stmt->num_rows > 0) {
         // Bind the result variables
-        $stmt->bind_result($employee_id, $stored_password, $is_first_login);
+        $stmt->bind_result($employee_id, $stored_password, $is_first_login, $job);
         $stmt->fetch();
 
         // Verify the password
         if ($password === $stored_password) {
-            // Check if it's the first login
-            if ($is_first_login == 1) {
-                $_SESSION['employee_id'] = $employee_id; // store user ID in session
-                header("Location: dashboard.php");
-                exit();
-            } else {
-                // Set session variables for the logged-in user
-                $_SESSION['employee_id'] = $employee_id;
-                $_SESSION['username'] = $username;
+            // Check if the user is an Admin
+            if ($job == 'Admin') {
+                // Insert a new time log into the admin_time_logs table
+                $log_stmt = $conn->prepare("INSERT INTO admin_time_logs (admin_id) VALUES (?)");
+                $log_stmt->bind_param("i", $employee_id);
+                $log_stmt->execute();
+                $log_stmt->close();
+                
+                // Check if it's the first login
+                if ($is_first_login == 1) {
+                    $_SESSION['employee_id'] = $employee_id; // store user ID in session
+                    header("Location: dashboard.php");
+                    exit();
+                } else {
+                    // Set session variables for the logged-in user
+                    $_SESSION['employee_id'] = $employee_id;
+                    $_SESSION['username'] = $username;
 
-                // Redirect to a welcome page or dashboard
-                header("Location: dashboard.php");
-                exit();
+                    // Redirect to a welcome page or dashboard
+                    header("Location: dashboard.php");
+                    exit();
+                }
+            } else {
+                // If the user is not an admin, handle accordingly (optional)
+                $error = "You do not have admin privileges.";
             }
         } else {
             $error = "Invalid password."; // Password does not match

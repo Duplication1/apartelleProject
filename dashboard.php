@@ -1,3 +1,13 @@
+<?php
+session_start(); 
+
+if (!isset($_SESSION['employee_id'])) {
+  
+    header('Location: login.php');
+    exit(); 
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -45,7 +55,9 @@
         <h1 class='h1-second-nav'>INVENTORY MANAGEMENT</h1>
         </div>
         <button class='second-nav-button' data-file='inventoryManagement/stock_levels.php' onclick='highlightSecondNav(this); loadPHP(this);'>Stock Levels</button>
-        <button class='second-nav-button' data-file='inventoryManagement/asset_tracking.php' onclick='highlightSecondNav(this); loadPHP(this);'>Asset Tracking</button>">
+        <button class='second-nav-button' data-file='inventoryManagement/asset_tracking.php' onclick='highlightSecondNav(this); loadPHP(this);'>Asset Tracking</button>
+        <button class='second-nav-button' data-file='inventoryManagement/reorder_alerts.php' onclick='highlightSecondNav(this); loadPHP(this);'>Reorder Alerts</button>
+        ">
         <img src="images/first-side-nav-icon.png" />
     </button>   
 
@@ -89,6 +101,7 @@
         </div>
         <button class='second-nav-button' data-file='inventoryManagement/stock_levels.php' onclick='highlightSecondNav(this); loadPHP(this);'>Stock Levels</button>
         <button class='second-nav-button' data-file='inventoryManagement/asset_tracking.php' onclick='highlightSecondNav(this); loadPHP(this);'>Asset Tracking</button>
+        <button class='second-nav-button' data-file='inventoryManagement/reorder_alerts.php' onclick='highlightSecondNav(this); loadPHP(this);'>Reorder Alerts</button>
     </div>
     <div id="result" class="body">
         
@@ -468,9 +481,29 @@ $(document).ready(function() {
     });
 });
 
+</script>
+<script>
+ $(document).on('click', '#submitButtonOrder', function() {
+    var formData = new FormData($('#orderReportForm')[0]);
 
-
-</script>   
+    $.ajax({
+        type: 'POST',
+        url: 'inventoryManagement/submit_order.php', // Ensure this path is correct
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            console.log(response); // Log the response for debugging
+            $('#responseMessage').html('<div class="alert alert-success">order reported successfully!</div>');
+            $('#orderReportForm')[0].reset(); // Reset the form
+        },
+        error: function(xhr, status, error) {
+            console.error("AJAX Error:", error); // Log error for debugging
+            $('#responseMessage').html('<div class="alert alert-danger">Error reporting incident: ' + error + '</div>');
+        }
+    });
+});
+</script>
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
