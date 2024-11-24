@@ -556,55 +556,37 @@ $(document).ready(function() {
 
 </script>
 <script>
-   function loadPHPP(button) {
-    var file = button.getAttribute('data-file');
-    if (file) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", file, true);
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                document.getElementById("result").innerHTML = xhr.responseText;
-                // Initialize chart after content is loaded
-                setTimeout(initializeChart, 100); // Delay to ensure DOM is fully updated
-                history.pushState(null, '', '?file=' + encodeURIComponent(file));
-            }
-        };
-        xhr.send();
-    }
-}
-
-function initializeChart() {
-    const ctx = document.getElementById('performanceChart');
-    if (ctx) {
-        new Chart(ctx, {
+  function initializeChart() {
+    // Line Chart
+    const lineCtx = document.getElementById('performanceChart');
+    if (lineCtx) {
+        new Chart(lineCtx, {
             type: 'line',
             data: {
                 labels: ['2020', '2021', '2022', '2023', '2024'],
                 datasets: [{
                     label: 'Satisfied',
-                    data: [20, 40, 55, 45, 50, 50],
+                    data: [20, 40, 55, 45, 50],
                     borderColor: 'rgba(75, 192, 192, 1)',
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     tension: 0.000001,
                 },
                 {
-                label: 'Dissatisfied', // Second dataset label
-                data: [5, 45, 15, 25, 15], // Data for second dataset
-                borderColor: 'rgba(255, 99, 132, 1)', // Line color for second dataset
-                backgroundColor: 'rgba(255, 99, 132, 0.2)', // Optional area color
-                tension: 0.000001, // Line smoothness
-                fill: false, // Don't fill under the line
-                 },
-                 {
-                label: 'Neutral', // Third dataset label
-                data: [15, 15, 45, 25, 55], // Data for third dataset
-                borderColor: 'rgba(54, 162, 235, 1)', // Line color for third dataset
-                backgroundColor: 'rgba(54, 162, 235, 0.2)', // Optional area color
-                tension: 0.000001, // Line smoothness
-                fill: false, // Don't fill under the line
-                }
-            ],
-                   
+                    label: 'Dissatisfied',
+                    data: [5, 45, 15, 25, 15],
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    tension: 0.000001,
+                    fill: false,
+                },
+                {
+                    label: 'Neutral',
+                    data: [15, 15, 45, 25, 55],
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    tension: 0.000001,
+                    fill: false,
+                }]
             },
             options: {
                 responsive: false,
@@ -632,7 +614,87 @@ function initializeChart() {
             }
         });
     }
+
+    // First Pie Chart
+    const pieCtx1 = document.getElementById('pieChart1');
+    if (pieCtx1) {
+        new Chart(pieCtx1, {
+            type: 'pie',
+            data: {
+                labels: ['Bathroom', 'Bedroom', 'Staff', 'Others'],
+                datasets: [{
+                    data: [30, 15, 25, 30],
+                    backgroundColor: ['#2E236C', '#433D8B', '#C8ACD6', '#796CBA'],
+                }]
+            },
+            options: {
+                responsive: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                    }
+                }
+            }
+        });
+    }
+
+    // Second Pie Chart
+    const pieCtx2 = document.getElementById('pieChart2');
+    if (pieCtx2) {
+        new Chart(pieCtx2, {
+            type: 'pie',
+            data: {
+                labels: ['Satisfied', 'Dissatisfied', 'Neutral'],
+                datasets: [{
+                    data: [30, 40, 30],
+                    backgroundColor: ['rgba(75, 192, 192, 0.7)', 'rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)'],
+                }]
+            },
+            options: {
+                responsive: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                    }
+                }
+            }
+        });
+    }
 }
+
+</script>
+<script>
+    $(document).ready(function() {
+    // Handle individual evaluation update
+    $(document).on('click', '.update-evaluation-btn', function() {
+        var evaluationId = $(this).data('id');
+
+        // Get the updated values from the input fields
+        var evaluationDate = $("input[name='evaluation_date_" + evaluationId + "']").val();
+        var remarks = $("input[name='remarks_" + evaluationId + "']").val();
+        var evaluatorName = $("input[name='evaluator_name_" + evaluationId + "']").val();
+
+        // AJAX request to update the evaluation record
+        $.ajax({
+            url: 'productionSchedulingAndControl/update_evaluation.php', // This file will handle the update logic
+            method: 'POST',
+            data: {
+                evaluation_id: evaluationId,
+                evaluation_date: evaluationDate,
+                remarks: remarks,
+                evaluator_name: evaluatorName
+            },
+            success: function(response) {
+                alert('Evaluation updated successfully!');
+            },
+            error: function(xhr, status, error) {
+                alert('Error: ' + error);
+            }
+        });
+    });
+});
 </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 

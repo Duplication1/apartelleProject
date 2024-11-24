@@ -86,59 +86,7 @@ $schedule_result = $conn->query($schedule_query);
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-$(document).ready(function() {
-    // Handle individual schedule update
-    $(document).on('click', '.update-schedule-btn', function() {
-        var scheduleId = $(this).data('id');
 
-        // Get the updated values from the input fields
-        var location = $("select[name='location_" + scheduleId + "']").val();
-        var scheduleDate = $("input[name='schedule_date_" + scheduleId + "']").val();
-
-        // AJAX request to update the schedule
-        $.ajax({
-            url: 'update_security_schedule.php',
-            method: 'POST',
-            data: {
-                id: scheduleId,
-                location: location,
-                schedule_date: scheduleDate
-            },
-            success: function(response) {
-                alert('Schedule updated successfully!');
-                location.reload();  // Reload the page to show the updated data
-            },
-            error: function(xhr, status, error) {
-                alert('Error: ' + error);
-            }
-        });
-    });
-
-    // Handle update all schedules' security date
-    $('#btn-update-security-date').on('click', function() {
-        var newDate = $('#updateDateInput').val();
-
-        if (!newDate) {
-            alert('Please select a date before updating all schedules.');
-            return;
-        }
-
-        $.ajax({
-            url: 'update_all_security_schedules.php',  // Update this with your backend PHP file for batch updates
-            method: 'POST',
-            data: {
-                newDate: newDate
-            },
-            success: function(response) {
-                alert('All security schedules updated successfully!');
-                location.reload();  // Reload the page to show the updated data
-            },
-            error: function(xhr, status, error) {
-                alert('Error: ' + error);
-            }
-        });
-    });
-});
 </script>
 
 </body>
