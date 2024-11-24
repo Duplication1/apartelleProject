@@ -810,10 +810,15 @@ th{
     margin-left: 10px;
 }
 
-.btn-cleaning-update, .btn-maintenance{
+.btn-cleaning-update, .btn-update-maintenance{
     background-color: var(--lesser-main-color);
     border: 0;
     color: var(--white);
     border-radius: 4px;
     padding: 6px 4px 6px 4px;
 }
+
+#performanceChart {
+    width: 100%;
+    height: 400px;
+  }

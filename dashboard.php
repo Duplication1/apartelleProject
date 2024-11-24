@@ -1,3 +1,4 @@
+
 <?php
 session_start(); 
 
@@ -27,7 +28,7 @@ if (!isset($_SESSION['employee_id'])) {
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-   
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -78,7 +79,7 @@ if (!isset($_SESSION['employee_id'])) {
         </div>
         <button class='second-nav-button' data-file='securityAndSafety/access_control.php' onclick='highlightSecondNav(this); loadPHP(this);'>Access Control System</button>
         <button class='second-nav-button' data-file='securityAndSafety/emergency_procedure.php' onclick='highlightSecondNav(this); loadPHP(this);'>Emergency Procedure</button>
-        <button class='second-nav-button' data-file='securityAndSafety/safety_inspection.php' onclick='highlightSecondNav(this); loadPHP(this);'>Safety Inspection</button>
+        <button class='second-nav-button' data-file='securityAndSafety/security_personnel.php' onclick='highlightSecondNav(this); loadPHP(this);'>Security</button>
         <button class='second-nav-button' data-file='securityAndSafety/incident_reporting.php' onclick='highlightSecondNav(this); loadPHP(this);'>Incident Reporting</button>">
         <img src="images/third-side-nav-icon.png" />
     </button>
@@ -87,10 +88,9 @@ if (!isset($_SESSION['employee_id'])) {
         <div class='second-side-nav-div'>
         <h1 class='h1-second-nav'>PRODUCTION SCHEDULING & CONTROL</h1>
         </div>
-        <button class='second-nav-button' data-file='productionSchedulingAndControl/task_scheduling.php' onclick='highlightSecondNav(this); loadPHP(this);'>Task Scheduling</button>
         <button class='second-nav-button' data-file='productionSchedulingAndControl/resources_allocation.php' onclick='highlightSecondNav(this); loadPHP(this);'>Resources Allocation</button>
-        <button class='second-nav-button' data-file='productionSchedulingAndControl/performance_monitoring.php' onclick='highlightSecondNav(this); loadPHP(this);'>Performance Monitoring</button>
-        <button class='second-nav-button' data-file='productionSchedulingAndControl/quality_control.php' onclick='highlightSecondNav(this); loadPHP(this);'>Quality Control Measures</button>">
+        <button class='second-nav-button' data-file='productionSchedulingAndControl/performance_monitoring.php' onclick='highlightSecondNav(this); loadPHPP(this);'>Performance Monitoring</button>
+      ">
         <img src="images/fourth-side-nav-icon.png" />
     </button>
         </div>
@@ -483,27 +483,162 @@ $(document).ready(function() {
 
 </script>
 <script>
- $(document).on('click', '#submitButtonOrder', function() {
+     $(document).on('click', '#addItemButton', function() {
+        var newItem = $('.order-item:first').clone(); // Clone the first item row
+        newItem.find('input').val(''); // Reset values
+        $('.order-items').append(newItem); // Append the new item row
+    });
+
+    // Remove an item input field
+    $(document).on('click', '.remove-item', function() {
+        $(this).closest('.order-item').remove(); // Remove the current item row
+    });
+    $(document).on('click', '#submitButtonOrder', function() {
     var formData = new FormData($('#orderReportForm')[0]);
+    var submitButton = $(this);
+
+    // Disable the button to prevent multiple submissions
+    submitButton.prop('disabled', true);
 
     $.ajax({
         type: 'POST',
-        url: 'inventoryManagement/submit_order.php', // Ensure this path is correct
+        url: 'inventoryManagement/submit_order.php',
         data: formData,
         processData: false,
         contentType: false,
         success: function(response) {
-            console.log(response); // Log the response for debugging
-            $('#responseMessage').html('<div class="alert alert-success">order reported successfully!</div>');
-            $('#orderReportForm')[0].reset(); // Reset the form
+            console.log(response);
+            $('#responseMessage').html('<div class="alert alert-success">Order reported successfully!</div>');
+            $('#orderReportForm')[0].reset();
         },
         error: function(xhr, status, error) {
-            console.error("AJAX Error:", error); // Log error for debugging
-            $('#responseMessage').html('<div class="alert alert-danger">Error reporting incident: ' + error + '</div>');
+            console.error("AJAX Error:", error);
+            $('#responseMessage').html('<div class="alert alert-danger">Error reporting order: ' + error + '</div>');
+        },
+        complete: function() {
+            // Re-enable the button after request completes
+            submitButton.prop('disabled', false);
         }
     });
 });
+
 </script>
+<script>
+$(document).ready(function() {
+    // Handle individual schedule update
+    $(document).on('click', '.update-schedule-btn', function() {
+        var scheduleId = $(this).data('id');
+
+        // Get the updated values from the input fields
+        var location = $("select[name='location_" + scheduleId + "']").val();
+        var scheduleDate = $("input[name='schedule_date_" + scheduleId + "']").val();
+
+        // AJAX request to update the schedule
+        $.ajax({
+            url: 'securityAndSafety/update_security_schedule.php',
+            method: 'POST',
+            data: {
+                id: scheduleId,
+                location: location,
+                schedule_date: scheduleDate
+            },
+            success: function(response) {
+                alert('Schedule updated successfully!');
+            },
+            error: function(xhr, status, error) {
+                alert('Error: ' + error);
+            }
+        });
+    });
+
+});
+
+
+</script>
+<script>
+   function loadPHPP(button) {
+    var file = button.getAttribute('data-file');
+    if (file) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", file, true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                document.getElementById("result").innerHTML = xhr.responseText;
+                // Initialize chart after content is loaded
+                setTimeout(initializeChart, 100); // Delay to ensure DOM is fully updated
+                history.pushState(null, '', '?file=' + encodeURIComponent(file));
+            }
+        };
+        xhr.send();
+    }
+}
+
+function initializeChart() {
+    const ctx = document.getElementById('performanceChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['2020', '2021', '2022', '2023', '2024'],
+                datasets: [{
+                    label: 'Satisfied',
+                    data: [20, 40, 55, 45, 50, 50],
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.000001,
+                },
+                {
+                label: 'Dissatisfied', // Second dataset label
+                data: [5, 45, 15, 25, 15], // Data for second dataset
+                borderColor: 'rgba(255, 99, 132, 1)', // Line color for second dataset
+                backgroundColor: 'rgba(255, 99, 132, 0.2)', // Optional area color
+                tension: 0.000001, // Line smoothness
+                fill: false, // Don't fill under the line
+                 },
+                 {
+                label: 'Neutral', // Third dataset label
+                data: [15, 15, 45, 25, 55], // Data for third dataset
+                borderColor: 'rgba(54, 162, 235, 1)', // Line color for third dataset
+                backgroundColor: 'rgba(54, 162, 235, 0.2)', // Optional area color
+                tension: 0.000001, // Line smoothness
+                fill: false, // Don't fill under the line
+                }
+            ],
+                   
+            },
+            options: {
+                responsive: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Year',
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Performance Value',
+                        },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+}
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+    const myChart = new Chart(ctx, {...});
+    </script>
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
