@@ -43,24 +43,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['item_id']) && isset($_
         $stmt = $conn->prepare($update_sql);
         $stmt->bind_param("si", $new_status, $item_id);
 
-        if ($stmt->execute()) {
-            // Insert into status_history_tbl
-            $insert_history_sql = "INSERT INTO status_history_tbl (item_id, status, updated_at) VALUES (?, ?, NOW())";
-            $history_stmt = $conn->prepare($insert_history_sql);
-            $history_stmt->bind_param("is", $item_id, $new_status);
+      // Inside the PHP script that updates the status (asset_tracking.php):
 
-            if ($history_stmt->execute()) {
-                // Success
-                echo json_encode(['success' => true, 'message' => 'Status updated successfully!']);
-            } else {
-                echo json_encode(['success' => false, 'message' => 'Error inserting status history: ' . $history_stmt->error]);
-            }
-            
-            $history_stmt->close();
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Error updating status: ' . $stmt->error]);
-        }
-        $stmt->close();
+// After updating the status in the database
+if ($stmt->execute()) {
+    // Insert into status_history_tbl
+    $insert_history_sql = "INSERT INTO status_history_tbl (item_id, status, updated_at) VALUES (?, ?, NOW())";
+    $history_stmt = $conn->prepare($insert_history_sql);
+    $history_stmt->bind_param("is", $item_id, $new_status);
+
+    if ($history_stmt->execute()) {
+        // Success, return a JSON response
+        echo json_encode([
+            'success' => true,
+            'message' => 'Status updated successfully!',
+            'new_status' => $new_status,
+            'latest_track' => date('Y-m-d H:i:s') // Current timestamp for latest track
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Error inserting status history: ' . $history_stmt->error
+        ]);
+    }
+    
+    $history_stmt->close();
+} else {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Error updating status: ' . $stmt->error
+    ]);
+}
+$stmt->close();
+
     }
     exit; // Exit after handling the AJAX request
 }

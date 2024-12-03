@@ -1,52 +1,34 @@
 <?php
-// Database connection
-$host = 'localhost';
-$db = 'apartelle_db';
-$user = 'root';
-$pass = '';
+include_once("../connection/connection.php");
+$con = connection(); // Use $con consistently
 
-// Create connection
-$conn = new mysqli($host, $user, $pass, $db);
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+// Check if the required POST data is set
+if (isset($_POST['id']) && isset($_POST['assignee']) && isset($_POST['status'])) {
+    $id = $_POST['id'];
+    $assignee = $_POST['assignee'];
+    $status = $_POST['status'];
 
-// Get data from AJAX request
-$schedule_id = $_POST['schedule_id'];
-$assignee_id = $_POST['assignee_id'];
+    // Prepare and execute the update statement
+    $stmt = $con->prepare("UPDATE maintenance_schedules SET assignee = ?, status = ? WHERE id = ?");
+    
+    // Assuming id is an integer, use "ssi" for string, string, integer
+    $stmt->bind_param("ssi", $assignee, $status, $id);
 
-// Validate the input
-if (empty($schedule_id) || empty($assignee_id)) {
-    echo json_encode(['status' => 'error', 'message' => 'Invalid input']);
-    exit();
-}
+    if ($stmt->execute()) {
+        echo "Update successful!";
+    } else {
+        echo "Error updating record: " . $stmt->error;
+    }
 
-// Update assignee in maintenance_schedules table
-$sql = "UPDATE maintenance_schedules SET assignee = ? WHERE id = ?";
-$stmt = $conn->prepare($sql);
-
-// Check if the statement was prepared successfully
-if ($stmt === false) {
-    echo json_encode(['status' => 'error', 'message' => 'SQL prepare failed: ' . $conn->error]);
-    exit();
-}
-
-// Bind the parameters (assignee_id and schedule_id are both integers)
-$stmt->bind_param("ii", $assignee_id, $schedule_id);
-
-// Execute the query
-$stmt->execute();
-
-// Check if the update was successful
-if ($stmt->affected_rows > 0) {
-    echo json_encode(['status' => 'success', 'message' => 'Assignee updated successfully']);
+    $stmt->close();
 } else {
-    echo json_encode(['status' => 'error', 'message' => 'Error updating assignee or no change made']);
+    echo "Required fields are missing.";
 }
 
-// Close the statement and connection
-$stmt->close();
-$conn->close();
+// Close the connection
+$con->close();
 ?>

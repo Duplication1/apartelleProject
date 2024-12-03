@@ -67,7 +67,7 @@ $conn->close();
     <button onclick="filterItems('Electricity')" class="stock-filter-buttons">ELECTRICITY</button>
     <button onclick="filterItems('Water')" class="stock-filter-buttons">WATER</button>
 
-    <table class="table stock-table table-striped">
+    <table class="table stock-table table-striped" id="stockLevelTable">
         <thead>
             <tr class="stock-tr stock-tr-head">
                 <th scope="col">Item</th>

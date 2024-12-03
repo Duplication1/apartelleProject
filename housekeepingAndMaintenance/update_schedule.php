@@ -66,7 +66,9 @@ function updateAllCleaningDates($conn, $newDate) {
     if ($stmt) {
         $stmt->bind_param('s', $newDate);
         if ($stmt->execute()) {
-            echo json_encode(['success' => true]);
+            // Redirect back to the previous page
+            header("Location: " . $_SERVER['HTTP_REFERER']);
+            exit; // Stop further execution
         } else {
             // Optional: Log error (make sure to disable in production or log to a file)
             error_log('Failed to execute statement: ' . $stmt->error);
@@ -78,5 +80,4 @@ function updateAllCleaningDates($conn, $newDate) {
         echo json_encode(['success' => false, 'error' => 'Failed to prepare statement']);
     }
 }
-
 ?>

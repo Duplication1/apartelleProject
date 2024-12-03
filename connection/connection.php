@@ -1,14 +1,23 @@
-    <?php
-    $host = 'localhost'; // XAMPP default host
-    $db = 'apartelle_db'; // Database name
-    $user = 'root'; // Default XAMPP username
-    $pass = ''; // XAMPP usually has no password by default
+<?php
 
-    // Create connection
-    $conn = new mysqli($host, $user, $pass, $db);
+function connection()
+{
 
-    // Check connectional
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    } 
-    ?>
+    $host = "localhost";
+    $username = "root";
+    $password = "";
+    $database = "apartelle_db";
+
+    $con = new mysqli($host, $username, $password, $database);
+
+    if ($con->connect_error) {
+        
+        echo $con->connect_error;
+
+    } else{
+
+        return $con;
+
+    }
+
+}

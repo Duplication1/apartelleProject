@@ -25,7 +25,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// function sanitizeInput() {
+//     const inputField = document.getElementById("phone");
+
+//     // Store the cleaned value, removing any non-numeric characters
+//     let cleanedValue = inputField.value.replace(/[^0-9]/g, '');
+
+//     // Limit the value to a maximum of 11 digits
+//     if (cleanedValue.length > 11) {
+//         cleanedValue = cleanedValue.substring(0, 11);
+//     }
+
+//     // Set the cleaned value back to the input field
+//     inputField.value = cleanedValue;
+// }
+
+
 //////////////////////////////////////////////////////////////////////////
+
 
 // JavaScript to handle phone number input restrictions
 function sanitizeInput() {

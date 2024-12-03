@@ -1,5 +1,5 @@
 <?php
-// Database connection
+// Database connection parameters
 $host = 'localhost';
 $db = 'apartelle_db';
 $user = 'root';
@@ -10,20 +10,20 @@ $conn = new mysqli($host, $user, $pass, $db);
 
 // Check connection
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    die(json_encode(['status' => 'error', 'message' => 'Connection failed: ' . $conn->connect_error]));
 }
 
 // Get data from AJAX request
-$schedule_id = $_POST['schedule_id'];
-$assignee_id = $_POST['assignee_id'];
+$schedule_id = isset($_POST['schedule_id']) ? $_POST['schedule_id'] : null;
+$assignee_name = isset($_POST['assignee_name']) ? $_POST['assignee_name'] : null;
 
 // Validate the input
-if (empty($schedule_id) || empty($assignee_id)) {
-    echo json_encode(['status' => 'error', 'message' => 'Invalid input']);
+if (empty($schedule_id) || empty($assignee_name)) {
+    echo json_encode(['status' => 'error', 'message' => 'Invalid input. Schedule ID and Assignee Name are required.']);
     exit();
 }
 
-// Update assignee in cleaning_schedules table
+// Prepare the SQL statement
 $sql = "UPDATE cleaning_schedules SET assignee = ? WHERE id = ?";
 $stmt = $conn->prepare($sql);
 
@@ -33,17 +33,18 @@ if ($stmt === false) {
     exit();
 }
 
-// Bind the parameters (assignee_id and schedule_id are both integers)
-$stmt->bind_param("ii", $assignee_id, $schedule_id);
+// Bind the parameters
+$stmt->bind_param("si", $assignee_name, $schedule_id);
 
 // Execute the query
-$stmt->execute();
-
-// Check if the update was successful
-if ($stmt->affected_rows > 0) {
-    echo json_encode(['status' => 'success', 'message' => 'Assignee updated successfully']);
+if ($stmt->execute()) {
+    if ($stmt->affected_rows > 0) {
+        echo json_encode(['status' => 'success', 'message' => 'Assignee updated successfully.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'No rows updated. Check if the input values are correct or if the assignee is the same.']);
+    }
 } else {
-    echo json_encode(['status' => 'error', 'message' => 'Error updating assignee or no change made']);
+    echo json_encode(['status' => 'error', 'message' => 'Query execution failed: ' . $stmt->error]);
 }
 
 // Close the statement and connection

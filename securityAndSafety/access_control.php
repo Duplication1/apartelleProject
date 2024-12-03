@@ -1,14 +1,17 @@
 <?php
+include_once("../connection/connection.php");
+$conn = connection();
 session_start();
-// Include the database connection
-include '../connection/connection.php';
+
+
+
 
 // Fetch time logs for the admin user
 // SQL Query to join admin_time_logs with user_tbl to get the email
 $sql = "SELECT u.email, u.pass, at.login_time 
         FROM admin_time_logs at
-        JOIN user_tbl u ON at.admin_id = u.employee_id
-        WHERE at.admin_id = ?";
+        JOIN manager_tbl u ON at.employee_id = u.employee_id
+        WHERE at.employee_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $_SESSION['employee_id']);
 $stmt->execute();

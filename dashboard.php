@@ -2,11 +2,11 @@
 <?php
 session_start(); 
 
-if (!isset($_SESSION['employee_id'])) {
+/*if (!isset($_SESSION['employee_id'])) {
   
     header('Location: login.php');
     exit(); 
-}
+}*/
 ?>
 
 <!DOCTYPE html>
@@ -29,6 +29,8 @@ if (!isset($_SESSION['employee_id'])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css">
 </head>
 
 <body>
@@ -42,12 +44,15 @@ if (!isset($_SESSION['employee_id'])) {
         <img src="images/face.png" alt="Profile Face"/></button>
             
         <div id="dropdownMenu" class="dropdown-content">
-            <a href="#">Profile</a>
-            <a href="#">Settings</a>
-            <a href="logout.php">Logout</a>
+    <button id="logoutButton" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</button>
         </div>
+
         
     </header>
+    <?php 
+    include 'modals/logOutModal.html';
+    ?>
+    <div id="snackbar"></div>
     <div class="main-body">
     <div class="side-nav">
         <div class="side-nav-buttons-container">
@@ -89,7 +94,7 @@ if (!isset($_SESSION['employee_id'])) {
         <h1 class='h1-second-nav'>PRODUCTION SCHEDULING & CONTROL</h1>
         </div>
         <button class='second-nav-button' data-file='productionSchedulingAndControl/resources_allocation.php' onclick='highlightSecondNav(this); loadPHP(this);'>Resources Allocation</button>
-        <button class='second-nav-button' data-file='productionSchedulingAndControl/performance_monitoring.php' onclick='highlightSecondNav(this); loadPHPP(this);'>Performance Monitoring</button>
+        <button class='second-nav-button' data-file='productionSchedulingAndControl/performance_monitoring.php' onclick='highlightSecondNav(this); loadPHP(this);'>Performance Monitoring</button>
       ">
         <img src="images/fourth-side-nav-icon.png" />
     </button>
@@ -107,564 +112,16 @@ if (!isset($_SESSION['employee_id'])) {
         
     </div>
     </div>
-    <script src="script.js">
-     
-    </script>
-     <script>
-function updateQuantity(stockId) {
-    var newQuantity = document.getElementById('quantity_' + stockId).value;
-
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", "inventoryManagement/update_quantity.php", true);
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            alert(xhr.responseText); // Handle the response from the server
-            // Update the displayed quantity in the table
-            document.getElementById('display_quantity_' + stockId).textContent = newQuantity;
-        }
-    };
-    xhr.send("stock_id=" + stockId + "&quantity=" + newQuantity);
-}
-function updateButton(value) {
-            document.getElementById('dropdownMenuButton').innerText = value;
-        }
-</script>
-<script>
-    // Function to show item details when an item is clicked
-    function showItemDetails(itemId, itemName, latestTrack, status) {
-        document.getElementById("itemIdValue").innerHTML = itemId;
-        document.getElementById("itemNameValue").innerHTML = itemName;
-        document.getElementById("latestTrackValue").innerHTML = latestTrack;
-        document.getElementById("currentStatusValue").innerHTML = status;
-
-        // Update the active node in the tracking visual
-        const nodes = document.querySelectorAll(".noded");
-        nodes.forEach(node => {
-            node.classList.remove("active");
-            if (node.id === `node${status.replace(/\s+/g, '')}`) {
-                node.classList.add("active");
-            }
-        });
-
-        // Fetch status history
-        fetchStatusHistory(itemId);
-    }
-
-    // Function to fetch and display the status history
-    function fetchStatusHistory(itemId) {
-        $.ajax({
-            type: "POST",
-            url: "inventoryManagement/fetch_status_history.php", // Adjust this path if necessary
-            data: { item_id: itemId },
-            success: function(response) {
-                const historyHtml = response.split(",");
-                const historyContainer = document.getElementById("statusHistory");
-                historyContainer.innerHTML = "";
-
-                historyHtml.forEach(history => {
-                    const historyElement = document.createElement("p");
-                    historyElement.textContent = history;
-                    historyContainer.appendChild(historyElement);
-                });
-            },
-            error: function(xhr, status, error) {
-                console.error("Error fetching status history:", error);
-            }
-        });
-    }
-
-    $(document).ready(function() {
-    // Handle new order form submission with delegation
-    $(document).on('submit', '#newOrderForm', function(e) {
-        e.preventDefault(); // Prevent default form submission
-        $.ajax({
-            type: 'POST',
-            url: 'inventoryManagement/asset_tracking.php', // Submit to the same page
-            data: $(this).serialize(),
-            success: function(response) {
-                const data = JSON.parse(response);
-                alert(data.message);
-                if (data.success) {
-                    // Reload to update the list
-                    location.reload(); 
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("Error submitting new order:", error);
-            }
-        });
-    });
-
-    // Handle status update form submission with delegation
-    $(document).on('submit', 'form.updateStatusForm', function(e) {
-        e.preventDefault(); // Prevent default form submission
-        const form = $(this); // Get the form that triggered the event
-        $.ajax({
-            type: 'POST',
-            url: 'inventoryManagement/asset_tracking.php', // Submit to the same page
-            data: form.serialize(),
-            success: function(response) {
-                const data = JSON.parse(response);
-                alert(data.message);
-                if (data.success) {
-                    // Update the status in the table row without reloading the page
-                    const newStatus = form.find('select[name="new_status"]').val();
-                    const latestTrack = data.latest_track; // Get the new latest track timestamp
-                    const row = form.closest('tr');
-                    row.find('td:nth-child(4)').text(newStatus); // Update status cell
-                    row.find('td:nth-child(3)').text(latestTrack); // Update latest track with the new timestamp
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("Error updating status:", error);
-            }
-        });
-    });
-});
-
-
-
-</script>
+    <script src="script.js"></script>
+     <script src="js/updateQuantity.js"></script>
+    <script src="js/assetTracking.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<script>
-     $(document).on('click', '#submitButton', function() {
-    var formData = new FormData($('#incidentReportForm')[0]);
-
-    $.ajax({
-        type: 'POST',
-        url: 'securityAndSafety/submit_incident.php', // Ensure this path is correct
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function(response) {
-            console.log(response); // Log the response for debugging
-            $('#responseMessage').html('<div class="alert alert-success">Incident reported successfully!</div>');
-            $('#incidentReportForm')[0].reset(); // Reset the form
-        },
-        error: function(xhr, status, error) {
-            console.error("AJAX Error:", error); // Log error for debugging
-            $('#responseMessage').html('<div class="alert alert-danger">Error reporting incident: ' + error + '</div>');
-        }
-    });
-});
-
-
-
-    </script>
-<script>
-      $(document).ready(function() {
-            $('#submitButton').on('click', function() {
-                var formData = new FormData($('#incidentReportForm')[0]);
-
-                $.ajax({
-                    type: 'POST',
-                    url: 'securityAndSafety/submit_incident.php', // Path to your PHP script
-                    data: formData,
-                    processData: false, 
-                    contentType: false,
-                    success: function(response) {
-                        $('#responseMessage').html('<div class="alert alert-success">Incident reported successfully!</div>');
-                        $('#incidentReportForm')[0].reset(); // Reset the form
-                        location.reload(); // Reload the page to show the updated list
-                    },
-                    error: function(xhr, status, error) {
-                        $('#responseMessage').html('<div class="alert alert-danger">Error reporting incident: ' + error + '</div>');
-                    }
-                });
-            });
-
-            // Update status on change
-            $(document).on('change', '.status-select', function() {
-                var status = $(this).val();
-                var id = $(this).data('id');
-
-                $.ajax({
-                    type: 'POST',
-                    url: 'securityAndSafety/update_status.php', // Path to your PHP script to update the status
-                    data: { id: id, status: status },
-                    success: function(response) {
-                        $('#responseMessage').html('<div class="alert alert-success">Status updated successfully!</div>');
-                    },
-                    error: function(xhr, status, error) {
-                        $('#responseMessage').html('<div class="alert alert-danger">Error updating status: ' + error + '</div>');
-                    }
-                });
-            });
-        });
-</script>
-
-<script>
-$(document).ready(function() {
-    // Initialize DataTable
-    $('#example').DataTable();
-
-    // Handle individual status update
-    $(document).on('click', '.btn-update', function() {
-        var status = $(this).closest('tr').find('.status-dropdown').val();
-        var roomId = $(this).data('id');
-
-        $.ajax({
-            url: 'housekeepingAndMaintenance/update_schedule.php',  // URL to your PHP backend that handles the status update
-            method: 'POST',
-            data: {
-                id: roomId,
-                status: status
-            },
-            success: function(response) {
-                alert('Status updated successfully!');
-                location.reload();  // Reload the page to show the updated data
-            },
-            error: function(xhr, status, error) {
-                alert('Error: ' + error);
-            }
-        });
-    });
-
-    // Handle update all dates
-    $('#btn-update-all').on('click', function() {
-        var newDate = $('#updateDateInput').val();
-
-        if (!newDate) {
-            alert('Please select a date before updating all rooms.');
-            return;
-        }
-
-        $.ajax({
-            url: 'housekeepingAndMaintenance/update_schedule.php',  // URL to your PHP backend that handles updating all dates
-            method: 'POST',
-            data: {
-                newDate: newDate
-            },
-            success: function(response) {
-                alert('All cleaning dates updated successfully!');
-                location.reload();  // Reload the page to show the updated data
-            },
-            error: function(xhr, status, error) {
-                alert('Error: ' + error);
-            }
-        });
-    });
-
-    $(document).on('change', '.assignee-dropdown', function() {
-    var schedule_id = $(this).data('schedule-id');  // Get the schedule ID from the data attribute
-    var assignee_id = $(this).val();  // Get the selected assignee ID from the dropdown
-
-    // Make sure assignee_id is not empty
-    if (assignee_id) {
-        $.ajax({
-            url: 'housekeepingAndMaintenance/update_assignee.php',  // PHP script to update the assignee
-            type: 'POST',
-            data: {
-                schedule_id: schedule_id,
-                assignee_id: assignee_id
-            },
-            dataType: 'json',
-            success: function(response) {
-                if (response.status === 'success') {
-                    alert(response.message);  // Show success message
-                } else {
-                    alert(response.message);  // Show error message
-                }
-            },
-            error: function() {
-                alert('An error occurred while updating the assignee.');
-            }
-        });
-    } else {
-        alert("Please select a valid assignee.");
-    }
-});
-});
-
-
-</script>
-<script>
-  $(document).ready(function() {
-    // Initialize DataTable
-    $('#example').DataTable();
-
-    // Handle individual status update (maintenance tasks)
-    $(document).on('click', '.btn-update-maintenance', function() {
-        var status = $(this).closest('tr').find('.status-dropdown').val();
-        var taskId = $(this).data('id');  // Fetch maintenance schedule ID
-
-        // Make sure the status is selected
-        if (!status) {
-            alert('Please select a status.');
-            return;
-        }
-
-        $.ajax({
-            url: 'housekeepingAndMaintenance/update_maintenance_schedule.php',  // PHP backend to handle the status update for maintenance
-            method: 'POST',
-            data: {
-                id: taskId,    // Maintenance task ID to update
-                status: status // New status to set
-            },
-            success: function(response) {
-                var responseData = JSON.parse(response);  // Parse the JSON response
-
-                if (responseData.success) {
-                    alert('Status updated successfully!');
-                    location.reload();  // Reload the page to show the updated status
-                } else {
-                    alert('Error: ' + responseData.error);  // Show error message from backend
-                }
-            },
-            error: function(xhr, status, error) {
-                alert('Error: ' + error);  // Alert if there's an issue with the AJAX request
-            }
-        });
-    });
-
-    // Handle update all maintenance dates
-    $('#btn-update-all-maintenance').on('click', function() {
-        var newDate = $('#updateDateInputMaintenance').val();  // Get the new date from the input
-
-        if (!newDate) {
-            alert('Please select a date before updating all tasks.');
-            return;
-        }
-
-        $.ajax({
-            url: 'housekeepingAndMaintenance/update_maintenance_schedule.php',  // PHP backend to handle bulk date update for maintenance tasks
-            method: 'POST',
-            data: {
-                newDate: newDate  // New date for updating all maintenance schedules
-            },
-            success: function(response) {
-                var responseData = JSON.parse(response);  // Parse the JSON response
-
-                if (responseData.success) {
-                    alert('All maintenance dates updated successfully!');
-                    location.reload();  // Reload the page to reflect the changes
-                } else {
-                    alert('Error: ' + responseData.error);  // Show error message from backend
-                }
-            },
-            error: function(xhr, status, error) {
-                alert('Error: ' + error);  // Alert if there's an issue with the AJAX request
-            }
-        });
-    });
-
-    // Handle assignee update for maintenance tasks
-    $(document).on('change', '.assignee-dropdown-maintenance', function() {
-        var schedule_id = $(this).data('schedule-id');  // Get the schedule ID from the data attribute
-        var assignee_id = $(this).val();  // Get the selected assignee ID from the dropdown
-
-        // Make sure assignee_id is not empty
-        if (assignee_id) {
-            $.ajax({
-                url: 'housekeepingAndMaintenance/update_maintenance_assignee.php',  // PHP script to update the assignee for maintenance tasks
-                type: 'POST',
-                data: {
-                    schedule_id: schedule_id,
-                    assignee_id: assignee_id
-                },
-                dataType: 'json',
-                success: function(response) {
-                    if (response.status === 'success') {
-                        alert(response.message);  // Show success message
-                    } else {
-                        alert(response.message);  // Show error message
-                    }
-                },
-                error: function() {
-                    alert('An error occurred while updating the assignee.');
-                }
-            });
-        } else {
-            alert("Please select a valid assignee.");
-        }
-    });
-});
-
-</script>
-<script>
-     $(document).on('click', '#addItemButton', function() {
-        var newItem = $('.order-item:first').clone(); // Clone the first item row
-        newItem.find('input').val(''); // Reset values
-        $('.order-items').append(newItem); // Append the new item row
-    });
-
-    // Remove an item input field
-    $(document).on('click', '.remove-item', function() {
-        $(this).closest('.order-item').remove(); // Remove the current item row
-    });
-    $(document).on('click', '#submitButtonOrder', function() {
-    var formData = new FormData($('#orderReportForm')[0]);
-    var submitButton = $(this);
-
-    // Disable the button to prevent multiple submissions
-    submitButton.prop('disabled', true);
-
-    $.ajax({
-        type: 'POST',
-        url: 'inventoryManagement/submit_order.php',
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function(response) {
-            console.log(response);
-            $('#responseMessage').html('<div class="alert alert-success">Order reported successfully!</div>');
-            $('#orderReportForm')[0].reset();
-        },
-        error: function(xhr, status, error) {
-            console.error("AJAX Error:", error);
-            $('#responseMessage').html('<div class="alert alert-danger">Error reporting order: ' + error + '</div>');
-        },
-        complete: function() {
-            // Re-enable the button after request completes
-            submitButton.prop('disabled', false);
-        }
-    });
-});
-
-</script>
-<script>
-$(document).ready(function() {
-    // Handle individual schedule update
-    $(document).on('click', '.update-schedule-btn', function() {
-        var scheduleId = $(this).data('id');
-
-        // Get the updated values from the input fields
-        var location = $("select[name='location_" + scheduleId + "']").val();
-        var scheduleDate = $("input[name='schedule_date_" + scheduleId + "']").val();
-
-        // AJAX request to update the schedule
-        $.ajax({
-            url: 'securityAndSafety/update_security_schedule.php',
-            method: 'POST',
-            data: {
-                id: scheduleId,
-                location: location,
-                schedule_date: scheduleDate
-            },
-            success: function(response) {
-                alert('Schedule updated successfully!');
-            },
-            error: function(xhr, status, error) {
-                alert('Error: ' + error);
-            }
-        });
-    });
-
-});
-
-
-</script>
-<script>
-  function initializeChart() {
-    // Line Chart
-    const lineCtx = document.getElementById('performanceChart');
-    if (lineCtx) {
-        new Chart(lineCtx, {
-            type: 'line',
-            data: {
-                labels: ['2020', '2021', '2022', '2023', '2024'],
-                datasets: [{
-                    label: 'Satisfied',
-                    data: [20, 40, 55, 45, 50],
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    tension: 0.000001,
-                },
-                {
-                    label: 'Dissatisfied',
-                    data: [5, 45, 15, 25, 15],
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    tension: 0.000001,
-                    fill: false,
-                },
-                {
-                    label: 'Neutral',
-                    data: [15, 15, 45, 25, 55],
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    tension: 0.000001,
-                    fill: false,
-                }]
-            },
-            options: {
-                responsive: false,
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top',
-                    }
-                },
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Year',
-                        }
-                    },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Performance Value',
-                        },
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    }
-
-    // First Pie Chart
-    const pieCtx1 = document.getElementById('pieChart1');
-    if (pieCtx1) {
-        new Chart(pieCtx1, {
-            type: 'pie',
-            data: {
-                labels: ['Bathroom', 'Bedroom', 'Staff', 'Others'],
-                datasets: [{
-                    data: [30, 15, 25, 30],
-                    backgroundColor: ['#2E236C', '#433D8B', '#C8ACD6', '#796CBA'],
-                }]
-            },
-            options: {
-                responsive: false,
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top',
-                    }
-                }
-            }
-        });
-    }
-
-    // Second Pie Chart
-    const pieCtx2 = document.getElementById('pieChart2');
-    if (pieCtx2) {
-        new Chart(pieCtx2, {
-            type: 'pie',
-            data: {
-                labels: ['Satisfied', 'Dissatisfied', 'Neutral'],
-                datasets: [{
-                    data: [30, 40, 30],
-                    backgroundColor: ['rgba(75, 192, 192, 0.7)', 'rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)'],
-                }]
-            },
-            options: {
-                responsive: false,
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top',
-                    }
-                }
-            }
-        });
-    }
-}
-
-</script>
+<script src="js/submitIncident.js"></script>
+<script src="js/cleaning.js"></script>
+<script src="js/maintenance.js"></script>
+<script src="js/reorder.js"></script>
+<script src="js/updateSecurity.js"></script>
+<script src="js/chart.js"></script>
 <script>
     $(document).ready(function() {
     // Handle individual evaluation update
@@ -701,9 +158,9 @@ $(document).ready(function() {
     <script>
     const myChart = new Chart(ctx, {...});
     </script>
-    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.1.8/js/dataTables.bootstrap5.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="dataTable.js"></script>   
 </body>
 </html>

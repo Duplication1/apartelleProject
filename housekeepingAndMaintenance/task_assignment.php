@@ -38,7 +38,7 @@
                     ms.id AS task_id, 
                     ms.scheduled_date AS date, 
                     CONCAT(e.firstname, ' ', e.lastname) AS assignee_name, 
-                    e.job AS assignee_job
+                    e.JobTitle AS assignee_job
                 FROM maintenance_schedules ms
                 LEFT JOIN employee_tbl e ON ms.assignee = e.employee_id
 
@@ -48,7 +48,7 @@
                     cs.id AS task_id, 
                     cs.cleaning_date AS date, 
                     CONCAT(e.firstname, ' ', e.lastname) AS assignee_name, 
-                    e.job AS assignee_job
+                    e.JobTitle AS assignee_job
                 FROM cleaning_schedules cs
                 LEFT JOIN employee_tbl e ON cs.assignee = e.employee_id
             ";

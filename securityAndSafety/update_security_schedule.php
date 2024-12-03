@@ -1,41 +1,42 @@
+
 <?php
-// Database connection
-$conn = new mysqli('localhost', 'root', '', 'apartelle_db');
+include_once("../connection/connection.php");
+$con = connection();
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+// Check if the required POST parameters are set
+if (isset($_POST['id']) && isset($_POST['location']) && isset($_POST['schedule_date']) && isset($_POST['assignee'])) {
+    $id = $_POST['id'];
+    $location = $_POST['location'];
+    $schedule_date = $_POST['schedule_date'];
+    $assignee = $_POST['assignee']; // Get the assignee from the POST data
 
-// Check if data was sent via POST
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Sanitize and fetch the posted data
-    $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
-    $location = isset($_POST['location']) ? $conn->real_escape_string($_POST['location']) : '';
-    $schedule_date = isset($_POST['schedule_date']) ? $conn->real_escape_string($_POST['schedule_date']) : '';
+    // Debugging output
+    error_log("ID: $id, Location: $location, Schedule Date: $schedule_date, Assignee: $assignee");
 
-    // Check if the required data is present
-    if ($id > 0 && !empty($location) && !empty($schedule_date)) {
-        // Update the schedule in the database
-        $update_query = "
-            UPDATE security_schedules 
-            SET location = '$location', schedule_date = '$schedule_date' 
-            WHERE id = $id
-        ";
+    // Check if the record exists
+    $result = $con->query("SELECT * FROM security_schedules WHERE id = $id");
+    if ($result->num_rows === 0) {
+        echo json_encode(['status' => 'error', 'message' => 'No record found with this ID.']);
+        exit;
+    }
 
-        if ($conn->query($update_query) === TRUE) {
-            // Success response
-            echo "Schedule updated successfully.";
+    // Prepare and execute the update statement
+    $stmt = $con->prepare("UPDATE security_schedules SET location = ?, schedule_date = ?, assignee = ? WHERE id = ?");
+    $stmt->bind_param("sssi", $location, $schedule_date, $assignee, $id);
+
+    if ($stmt->execute()) {
+        if ($stmt->affected_rows > 0) {
+            echo json_encode(['status' => 'success', 'message' => 'Schedule updated successfully!']);
         } else {
-            // Error response
-            echo "Error: " . $conn->error;
+            echo json_encode(['status' => 'error', 'message' => 'No rows updated. Check if the data is the same as before.']);
         }
     } else {
-        echo "Invalid input. Please ensure all fields are filled out.";
+        echo json_encode(['status' => 'error', 'message' => 'Failed to update schedule: ' . $stmt->error]);
     }
 } else {
-    echo "Invalid request method.";
+    echo json_encode(['status' => 'error', 'message' => 'Required fields are missing.']);
 }
 
-// Close the database connection
-$conn->close();
+$stmt->close();
+$con->close();
 ?>
