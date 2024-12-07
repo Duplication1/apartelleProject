@@ -29,13 +29,36 @@ $(document).on('click', '.update-schedule-btn', function() {
         success: function(response) {
             var jsonResponse = JSON.parse(response);
             if (jsonResponse.status === 'success') {
-                alert(jsonResponse.message);
+                showSnackbar(jsonResponse.message, 'success');
             } else {
-                alert('Error: ' + jsonResponse.message);
+                showSnackbar('Error: ' + jsonResponse.message, 'error');
             }
         },
         error: function(xhr, status, error) {
-            alert('Error: ' + error);
+            showSnackbar('Error: ' + error, 'error');
         }
     });
 });
+
+// Function to show the snackbar with a message (using previous snackbar code)
+function showSnackbar(message, type) {
+    var snackbar = document.createElement("div");
+    snackbar.className = "snackbar " + type;
+    snackbar.textContent = message;
+
+    // Append snackbar to the body
+    document.body.appendChild(snackbar);
+
+    // Show the snackbar
+    setTimeout(function() {
+        snackbar.className = snackbar.className.replace("snackbar", "snackbar show");
+    }, 100);
+
+    // After 3 seconds, remove the snackbar
+    setTimeout(function() {
+        snackbar.className = snackbar.className.replace("show", "");
+        setTimeout(function() {
+            snackbar.remove();
+        }, 500); // Allow for animation before removal
+    }, 3000);
+}

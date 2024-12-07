@@ -63,12 +63,13 @@ if (isset($_POST['submit']) && !$alert_message) {
         } else {
             // Verify password
             if (password_verify($password, $row['pass'])) {
-                $_SESSION['user_id'] = $row['employee_id'];
+                
                 if ($row['is_first_login'] == 1) {
                     $_SESSION['is_first_login'] = true;
                     header("Location: FirstChangePass.php");
                 } else {
-                    header("Location: dashboard.php");
+                    $_SESSION['user_id'] = $row['employee_id'];
+                    header("Location: homepage.php");
                 }
                 // Reset attempts upon successful login
                 $_SESSION['login_attempts'] = 0;

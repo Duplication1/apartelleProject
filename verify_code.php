@@ -11,16 +11,21 @@ if (isset($_POST['code_verified']) && isset($_SESSION['login_code']) && $_POST['
     $result = $con->query($sql);
 
     if ($result && $row = $result->fetch_assoc()) {
-        // Assume the email matches and user is validated
-        $_SESSION['user_id'] = $row['email'];  // Set the session variable to user_id
-        $_SESSION['email'] = $row['email'];  // Set the session variable to email
-        unset($_SESSION['indefinite_lock']);
+        if ($row['is_first_login'] == 1) {
+            echo "It seems that it is your first time logging in, please use the <a href='adminlogin.php'>default login page</a>";
+        } else {
+            // Assume the email matches and user is validated
+            $_SESSION['user_id'] = $row['email'];  // Set the session variable to user_id
+            $_SESSION['email'] = $row['email'];  // Set the session variable to email
+            unset($_SESSION['indefinite_lock']);
+            unset($_SESSION['lock_time']);
 
-        // Return success if the session is successfully set
-        echo "success";
+            // Return success if the session is successfully set
+            echo "success";
+        }
     } else {
-        // If no admin email is found or something goes wrong
-        echo "User email not found or database error.";
+        // If no user email is found or something goes wrong
+        echo "Email not found or database error.";
     }
 } else {
     // If the code is incorrect or the form was not properly submitted

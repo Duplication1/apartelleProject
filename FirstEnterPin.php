@@ -5,7 +5,7 @@ session_start();
 
 // Check if user is already logged in
 if (isset($_SESSION['user_id'])) {
-    header("Location: homepage.php"); // Redirect to the home page
+    header("Location: dashboard.php"); // Redirect to the home page
     exit();
 }
 
@@ -53,7 +53,7 @@ if (isset($_POST['submit'])) {
         // Clear session and redirect to dashboard
         session_unset();
         unset($_SESSION['firstname'], $_SESSION['middlename'], $_SESSION['lastname'], $_SESSION['birthdate'], $_SESSION['email'], $_SESSION['phone'], $_SESSION['address'], $_SESSION['gender'], $_SESSION['pass'], $_SESSION['pin1'], $_SESSION['pin2'], $_SESSION['pin3'], $_SESSION['pin4'], $_SESSION['pin5'], $_SESSION['pin6'], $_SESSION['confirm-pin1'], $_SESSION['confirm-pin2'], $_SESSION['confirm-pin3'], $_SESSION['confirm-pin4'], $_SESSION['confirm-pin5'], $_SESSION['confirm-pin6'], $_SESSION['house_no'], $_SESSION['street_name'], $_SESSION['barangay_name'], $_SESSION['city'], $_SESSION['province'], $_SESSION['zip_code'], $_SESSION['is_first_login']);
-        header("Location: homepage.php");
+        header("Location: dashboard.php");
         exit();
     }
 }

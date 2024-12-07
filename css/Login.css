@@ -1,0 +1,645 @@
+@import url("https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap");
+
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+* {
+  padding: 0;
+  margin: 0;
+  font-family: "Figtree", sans-serif;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--background-blue);
+}
+
+:root {
+  --white-plain: #ffffff;
+  --blue-btn: #1a237e;
+  --black-font: #202020;
+  --sm-font: 14px;
+  --md-font: 16px;
+  --lg-font: 24px;
+  --hover-white: #e8e9f2;
+  --text-field: #b0b0b0;
+  --focus: #6d6d6d;
+  --hover-blue: rgb(72, 79, 152);
+  --border: rgba(26, 35, 126, 0.1);
+  --background-blue: #f9f9fe;
+}
+
+.login-main {
+  position: relative; /* This creates a new stacking context */
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.card {
+  max-width: 450px;
+  background-color: var(--white-plain);
+  filter: drop-shadow(0px 0px 32px rgba(0, 0, 0, 0.1));
+  border-radius: 8px;
+  padding: 46px;
+}
+
+.card .login-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.forgot-parent hr {
+  border: 0.5px solid var(--text-field); /* Remove default styling */
+  width: 100%; /* Set width */
+  margin: 12px auto;
+}
+
+.or {
+  position: absolute;
+  bottom: 0;
+  background-color: var(--white-plain);
+  padding: 5px;
+  color: var(--text-field);
+}
+
+.hr-or {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.text-field {
+  border-radius: 4px;
+  border: 1px solid var(--text-field);
+  width: 100%;
+  height: 43px;
+  padding: 8px;
+  font-size: var(--sm-font);
+  transition: border-color 0.3s;
+}
+
+.text-field:hover {
+  border: 2px solid var(--black-font);
+}
+
+.new-pass-cont:hover .material-symbols-outlined {
+  color: var(--black-font);
+}
+
+.text-field:focus {
+  border-color: var(--focus);
+  outline: none;
+}
+
+.logo {
+  width: 84px;
+  height: 37px;
+}
+
+.login-submit {
+  font-size: 16px;
+  background-color: var(--blue-btn);
+  width: 100%;
+  height: 43px;
+  border: 2px solid var(--blue-btn);
+  border-radius: 999px;
+  color: var(--white-plain);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.login-submit:hover {
+  background-color: var(--hover-blue);
+  border: 2px solid var(--border);
+}
+
+.login-submit:active {
+  border: 2px solid #1a237e;
+}
+
+.card h1 {
+  font-size: 28px;
+  font-family: "poppins";
+  font-weight: 600;
+  margin-top: 1rem;
+}
+
+.login-submit-border {
+  display: block;
+  width: 100%;
+  height: 43px;
+  padding: 10px 0;
+  text-align: center;
+  background-color: var(--white-plain);
+  border: 2px solid var(--blue-btn);
+  border-radius: 999px;
+  color: var(--blue-btn);
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+.login-submit-border:hover {
+  background-color: var(--hover-white);
+}
+
+.email-parent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.email {
+  margin-right: 10px;
+}
+
+.pass-parent {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 1rem;
+  font-size: 14px;
+}
+
+.pass-parent input:nth-child(2) {
+  margin-bottom: 1rem;
+}
+
+.forgot-parent {
+  display: flex;
+
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.eye-icon {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  color: var(--text-field);
+  cursor: pointer;
+}
+
+.forgot-txt {
+  font-size: 16px;
+  color: var(--blue-btn);
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  margin: 0 auto;
+  font-weight: 600;
+}
+
+.submit-btn {
+  width: 100%;
+  height: 48px;
+  border-radius: 999px;
+  border: none;
+  color: var(--blue-btn);
+  font-size: var(--sm-font);
+  cursor: pointer;
+  font-weight: 600;
+  background-color: var(--white-plain);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--md-font);
+}
+
+.submit-btn span {
+  margin-left: 10px;
+}
+
+.submit-btn:hover {
+  background-color: var(--hover-white);
+}
+
+.regular-txt {
+  font-family: "figtree";
+  font-size: var(--md-font);
+}
+
+.mid-txt {
+  font-size: 20px;
+}
+
+.card-forgot {
+  max-width: 450px;
+  padding: 8px;
+  background-color: var(--white-plain);
+  filter: drop-shadow(0px 0px 32px rgba(0, 0, 0, 0.1));
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 36px;
+}
+
+.card-forgot form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  filter: drop-shadow(0px 0px 32px rgba(0, 0, 0, 0.1));
+}
+
+.lb {
+  font-size: var(--sm-font);
+}
+
+.forgot-main {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.forgot-field {
+  margin-top: 10px;
+  border-radius: 4px;
+  border: 1px solid var(--text-field);
+  width: 100%;
+  height: 43px;
+  padding: 8px;
+  font-size: var(--sm-font);
+  transition: border-color 0.3s;
+}
+
+.forgot-btn {
+  float: right;
+  border-radius: 999px;
+  border: none;
+  color: var(--blue-btn);
+  font-size: var(--sm-font);
+  cursor: pointer;
+  font-weight: 600;
+  background-color: var(--white-plain);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: var(--md-font);
+  margin-top: 24px;
+  padding: 12px 32px;
+}
+
+.forgot-btn span {
+  margin-left: 10px;
+}
+
+.forgot-btn:hover {
+  background-color: var(--hover-white);
+}
+
+.email-modal {
+  padding: 15px 30px;
+  color: rgb(255, 255, 255);
+  background-color: rgb(230, 31, 31);
+  position: fixed;
+  bottom: 40px;
+  right: 45%;
+  border-radius: 8px;
+}
+
+.resend {
+  float: right;
+  height: 48px;
+  border-radius: 999px;
+  border: none;
+  color: var(--blue-btn);
+  font-size: var(--sm-font);
+  background-color: transparent;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: var(--md-font);
+  margin-top: 24px;
+  padding: 24px;
+}
+
+.resend:hover {
+  background-color: #eeeeee;
+}
+
+/* CHANGE PASS STYLE */
+
+.pin {
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  text-align: center;
+  margin: 5px;
+}
+
+.confirm-pin {
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  text-align: center;
+  margin: 5px;
+}
+
+/* Kulay pula para sa unmet requirements */
+.validation-list li {
+  color: var(--text-field);
+  list-style: none;
+}
+
+/* Kulay berde kapag natutugunan ang requirement */
+.validation-list li.valid {
+  color: #26e59f;
+  font-weight: 600;
+}
+
+.change-main {
+  width: 100%;
+  height: 100vh;
+  background-color: var(--background-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 96px;
+}
+
+.change-cont1 {
+  max-width: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.change-cont1 img {
+  width: 180px;
+  height: 180px;
+}
+
+.change-cont1 h1 {
+  font-size: 40px;
+  font-family: "poppins";
+  line-height: 50px;
+  margin-bottom: 1rem;
+}
+
+.change-cont1 p {
+  font-size: 16px;
+  font-family: "figtree";
+  line-height: 28px;
+}
+
+/* This is for the progression functionality */
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.progress-cont {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  margin-bottom: 48px;
+}
+
+.progress-cont ul li {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  list-style: none;
+  position: relative;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.progress-cont ul li a {
+  font-size: 14px;
+  text-decoration: none;
+  background-color: var(--background-blue);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--text-field);
+  position: relative;
+  z-index: 2;
+  border: 1px solid var(--text-field);
+}
+
+.progress-cont ul li .progress-unique {
+  background-color: var(--blue-btn);
+  border: #1a237e;
+  color: var(--white-plain);
+  font: 600;
+}
+
+.progress-cont ul li .progress-txt {
+  font-weight: 600;
+}
+
+.progress-cont ul li p {
+  font-size: 12px;
+}
+
+.progress-cont ul li div {
+  background-color: var(--text-field);
+  width: 165px;
+  height: 1px;
+  position: absolute;
+  bottom: 35px;
+  left: 60px;
+}
+
+/* .progress-cont ul li hr {
+  width: 100%;
+  border: 2px;
+  position: absolute;
+  bottom: 0;
+  left: 30px;
+} */
+
+.change-cont2 {
+  width: 490px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.change-cont2 form {
+  background-color: var(--white-plain);
+  width: 100%;
+  padding: 3rem;
+  border-radius: 12px;
+  box-shadow: 0 0 50px -32px rgba(0, 0, 0, 0.102);
+}
+
+.new-pass-cont {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.new-pass-cont label {
+  font-size: 19px;
+  font-weight: 600;
+  color: #3d3d3d;
+  margin-bottom: 0.5rem;
+}
+
+.eye-icon-change {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  color: var(--text-field);
+  cursor: pointer;
+}
+
+.password-validation {
+  margin: 2rem 0;
+}
+
+.password-validation li i {
+  list-style: none;
+}
+
+.password-validation li {
+  font-size: 12px;
+}
+
+.password-validation li:nth-child(1) {
+  font-weight: 600;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.change-pass-btn {
+  width: 100%;
+  height: 48px;
+  border: none;
+  font-size: 16px;
+  color: var(--blue-btn);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background-color: transparent;
+  padding: 1rem;
+}
+
+.change-pass-btn:hover {
+  background-color: var(--hover-white);
+  cursor: pointer;
+}
+
+.change-pass-btn span {
+  transition: padding-left 350ms ease-in-out;
+}
+
+.change-pass-btn:hover span {
+  padding-left: 1rem;
+}
+
+.info-cont {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.info-cont div {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.text-field-street {
+  width: 206px;
+}
+
+.text-field-house {
+  width: 80px;
+}
+
+.text-field-city {
+  width: 210px;
+}
+
+.create-id-child button {
+  margin-top: 2rem;
+}
+
+.create-id-child h1 {
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--black-font);
+  font-family: "poppins";
+  margin: 1rem 0;
+}
+
+.create-id-child label {
+  margin: 0.5rem 0;
+}
+
+.create-id form {
+  width: 100%;
+}
+
+.change-cont-personal {
+  width: 539px;
+}
+
+.pin-text {
+  border-radius: 4px;
+  border: 1px solid var(--text-field);
+  width: 50px;
+  height: 43px;
+  padding: 8px;
+  font-size: var(--sm-font);
+  transition: border-color 0.3s;
+}
+
+.pin-text:hover {
+  border: 2px solid var(--black-font);
+}
+
+.form-box {
+  width: 100%;
+}
+
+.form-box h1 {
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--black-font);
+  font-family: "poppins";
+  margin: 0.5rem 0;
+  text-align: center;
+}
+
+.form-box form div {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.form-box form div:nth-child(2) {
+  margin-bottom: 2rem;
+}
+
+.pin-btn {
+  margin-top: 2rem;
+}
+
+/* .resend-btn span {
+  vertical-align: middle;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 8px;
+} */

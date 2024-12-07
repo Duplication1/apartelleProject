@@ -1,13 +1,7 @@
 <?php
 include_once("connection/connection.php");
-$con = connection();
 session_start();
 
-// Check if user is already logged in
-if (isset($_SESSION['user_id'])) {
-    header("Location: homepage.php"); // Redirect to the home page
-    exit();
-}
 
 // Check if user is already logged in
 if (!isset($_SESSION['is_first_login'])) {

@@ -1,6 +1,4 @@
 $(document).ready(function() {
-    // Initialize DataTable
-
     // Handle individual status update (maintenance tasks)
     $(document).on('click', '.btn-update-maintenance', function() {
         var status = $(this).closest('tr').find('.status-dropdown').val();
@@ -8,12 +6,12 @@ $(document).ready(function() {
 
         // Make sure the status is selected
         if (!status) {
-            alert('Please select a status.');
+            showSnackbar('Please select a status.', false);  // Show error Snackbar
             return;
         }
 
         $.ajax({
-            url: 'housekeepingAndMaintenance/update_maintenance_schedule.php',  // PHP backend to handle the status update for maintenance
+            url: 'housekeepingAndMaintenance/update_maintenance_schedule.php',
             method: 'POST',
             data: {
                 id: taskId,    // Maintenance task ID to update
@@ -23,14 +21,16 @@ $(document).ready(function() {
                 var responseData = JSON.parse(response);  // Parse the JSON response
 
                 if (responseData.success) {
-                    alert('Status updated successfully!');
-                    location.reload();  // Reload the page to show the updated status
+                    showSnackbar('Status updated successfully!', true);  // Show success Snackbar
+                    setTimeout(function() {
+                        location.reload();  // Reload the page after 2 seconds
+                    }, 2000); // Reload the page to show the updated status
                 } else {
-                    alert('Error: ' + responseData.error);  // Show error message from backend
+                    showSnackbar('Error: ' + responseData.error, false);  // Show error Snackbar
                 }
             },
             error: function(xhr, status, error) {
-                alert('Error: ' + error);  // Alert if there's an issue with the AJAX request
+                showSnackbar('Error: ' + error, false);  // Show error Snackbar
             }
         });
     });
@@ -40,7 +40,7 @@ $(document).ready(function() {
         var newDate = $('#updateDateInputMaintenance').val();  // Get the new date from the input
 
         if (!newDate) {
-            alert('Please select a date before updating all tasks.');
+            showSnackbar('Please select a date before updating all tasks.', false);  // Show error Snackbar
             return;
         }
 
@@ -54,14 +54,16 @@ $(document).ready(function() {
                 var responseData = JSON.parse(response);  // Parse the JSON response
 
                 if (responseData.success) {
-                    alert('All maintenance dates updated successfully!');
-                    location.reload();  // Reload the page to reflect the changes
+                    showSnackbar('All maintenance dates updated successfully!', true);  // Show success Snackbar
+                    setTimeout(function() {
+                        location.reload();  // Reload the page after 2 seconds
+                    }, 2000);  // Reload the page to reflect the changes
                 } else {
-                    alert('Error: ' + responseData.error);  // Show error message from backend
+                    showSnackbar('Error: ' + responseData.error, false);  // Show error Snackbar
                 }
             },
             error: function(xhr, status, error) {
-                alert('Error: ' + error);  // Alert if there's an issue with the AJAX request
+                showSnackbar('Error: ' + error, false);  // Show error Snackbar
             }
         });
     });
@@ -73,11 +75,10 @@ $(document).ready(function() {
         var status = $(this).closest('tr').find('.status-dropdown').val();
     
         if (!assigneeId) {
-            alert('Please select an assignee.');
+            showSnackbar('Please select an assignee.', false);  // Show error Snackbar
             return;
         }
     
-        // Make an AJAX call or form submission here
         $.ajax({
             url: 'housekeepingAndMaintenance/update_maintenance_assignee.php',
             method: 'POST',
@@ -87,12 +88,35 @@ $(document).ready(function() {
                 status: status
             },
             success: function(response) {
-                // Handle the response
-                alert('Update successful!');
+                showSnackbar('Update successful!', true);  // Show success Snackbar
             },
             error: function(xhr, status, error) {
-                alert('An error occurred: ' + error);
+                showSnackbar('An error occurred: ' + error, false);  // Show error Snackbar
             }
         });
     });
+
+    // Function to show snackbar
+    function showSnackbar(message, isSuccess) {
+        var snackbar = $('#snackbar');
+        
+        // Prevent stacking by hiding any existing snackbar before showing the new one
+        snackbar.removeClass("show"); // Remove "show" class to hide any previous snackbar
+
+        // Set the message and styling based on success or error
+        snackbar.text(message);
+        if (isSuccess) {
+            snackbar.css('background-color', 'green'); // Green for success
+        } else {
+            snackbar.css('background-color', '#f44336'); // Red for error
+        }
+
+        // Show the snackbar
+        snackbar.addClass('show');
+
+        // Hide the snackbar after 3 seconds
+        setTimeout(function() {
+            snackbar.removeClass('show');
+        }, 3000);
+    }
 });

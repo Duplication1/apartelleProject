@@ -61,14 +61,16 @@ function updateMaintenanceStatus($conn, $id, $status) {
 
 // Function to update all maintenance scheduled dates
 function updateAllMaintenanceDates($conn, $newDate) {
-    // Prepare SQL statement to update all cleaning dates for maintenance schedules
+    // Prepare SQL statement to update all maintenance scheduled dates
     $sql = "UPDATE maintenance_schedules SET scheduled_date = ?";
     $stmt = $conn->prepare($sql);
 
     if ($stmt) {
         $stmt->bind_param('s', $newDate);
         if ($stmt->execute()) {
-            echo json_encode(['success' => true]);
+            // If the update is successful, send a redirect header
+            header("Location: " . $_SERVER['HTTP_REFERER']);
+            exit; // Make sure no further code is executed after the redirect
         } else {
             // Log error (optional)
             error_log('Failed to execute statement: ' . $stmt->error);
@@ -80,4 +82,5 @@ function updateAllMaintenanceDates($conn, $newDate) {
         echo json_encode(['success' => false, 'error' => 'Failed to prepare statement']);
     }
 }
+
 ?>

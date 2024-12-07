@@ -280,7 +280,7 @@
     transition: background-color 0.3s, color 0.3s;
     font-weight: var(--semi-bold);
     min-width: 160px;
-    
+    text-decoration: none;
 }
 @media (max-width: 1400px){
     .second-nav-button{
@@ -599,7 +599,7 @@ th{
     display: flex;
     flex-wrap: wrap;
     margin: 0 auto;
-    box-shadow: 1px 1px 2px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     padding: 20px;
     overflow-x: auto;
 }
@@ -835,7 +835,7 @@ th{
     visibility: hidden;
     min-width: 250px;
     margin-left: -125px;
-    background-color: #333;
+    background-color: green;
     color: #fff;
     text-align: center;
     border-radius: 4px;
@@ -874,4 +874,110 @@ th{
     to {
         opacity: 0;
     }
+}
+
+/* Snackbar Style */
+.snackbar {
+    background-color: green;
+    color: #fff;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    position: fixed;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+
+/* Snackbar V2 styles */
+.snackbar-v2 {
+    visibility: hidden; /* Hidden by default */
+    min-width: 250px; /* Minimum width */
+    margin-left: -125px; /* Center the snackbar horizontally */
+    background-color: #333; /* Default background color */
+    color: #fff; /* White text */
+    text-align: center; /* Center-align the text */
+    border-radius: 8px; /* Rounded corners */
+    padding: 16px; /* Padding for the snackbar */
+    position: fixed; /* Fixed position to the bottom of the screen */
+    z-index: 9999; /* Make sure the snackbar appears on top */
+    left: 50%;
+    bottom: 30px; /* Distance from the bottom */
+    font-size: 16px; /* Slightly smaller font size */
+    opacity: 0; /* Initially invisible */
+    transition: opacity 0.5s ease-in-out, bottom 0.5s ease-in-out; /* Smooth fade-in/out with sliding */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    height: 50px; /* Shadow effect for modern look */
+}
+
+/* Unique snackbar show class for animation */
+.snackbar-v2.show {
+    visibility: visible; /* Make the snackbar visible when shown */
+    opacity: 1; /* Fade in effect */
+    bottom: 50px; /* Slide up the snackbar when shown */
+}
+
+/* Success Snackbar */
+.snackbar-v2.success {
+    background-color: #4CAF50; /* Green background for success */
+    animation: slideInFromBottom 0.5s ease-out;
+}
+
+/* Error Snackbar */
+.snackbar-v2.error {
+    background-color: #f44336; /* Red background for error */
+    animation: slideInFromBottom 0.5s ease-out;
+}
+
+/* Info Snackbar */
+.snackbar-v2.info {
+    background-color: #2196F3; /* Blue background for info */
+    animation: slideInFromBottom 0.5s ease-out;
+}
+
+/* Slide-in animation */
+@keyframes slideInFromBottom {
+    0% {
+        bottom: -100px;
+    }
+    100% {
+        bottom: 50px;
+    }
+}
+.dashboard-container{
+    width: 100% !important;
+    max-width: 90% !important;
+    height: 90vh !important;
+    display: grid !important;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
+}
+.dashboard-row{
+}
+.dashboard-summary{
+    overflow-y: scroll !important;
+    max-height: 200px !important;
+}
+.dashboard-summary table{
+    min-width: 500px;
+    text-align: center;
+}
+.dashboard-col{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2%;
+}
+
+.reorder{
+    min-width: 80% !important;
+}
+
+.summary-img{
+    margin-bottom: auto;
+}
+#totalQuantity{
+    margin-bottom: 10%;
 }

@@ -1,13 +1,14 @@
 <?php 
 
 include_once("connection/connection.php");
+$con = connection();
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 require 'vendor/autoload.php';
 
 session_start();
-$con = connection();
+
 
 // Check if user is already logged in
 if (isset($_SESSION['user_id'])) {

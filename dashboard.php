@@ -7,6 +7,12 @@ session_start();
     header('Location: login.php');
     exit(); 
 }*/
+ include 'controller/dashboardStockController.php';
+ include 'controller/dashboardAssetTrackingController.php';
+ include 'controller/dashboardReorderAlertsController.php';
+ include 'controller/dashboardCleaningController.php';
+ include 'controller/dashboardMaintenanceController.php';
+ include 'controller/dashboardIncidentController.php'; 
 ?>
 
 <!DOCTYPE html>
@@ -60,6 +66,7 @@ session_start();
         <div class='second-side-nav-div'>
         <h1 class='h1-second-nav'>INVENTORY MANAGEMENT</h1>
         </div>
+        <a class='second-nav-button dashboard-link' href='dashboard.php' data-file='dashboard.php'>Dashboard</a>
         <button class='second-nav-button' data-file='inventoryManagement/stock_levels.php' onclick='highlightSecondNav(this); loadPHP(this);'>Stock Levels</button>
         <button class='second-nav-button' data-file='inventoryManagement/asset_tracking.php' onclick='highlightSecondNav(this); loadPHP(this);'>Asset Tracking</button>
         <button class='second-nav-button' data-file='inventoryManagement/reorder_alerts.php' onclick='highlightSecondNav(this); loadPHP(this);'>Reorder Alerts</button>
@@ -104,12 +111,136 @@ session_start();
         <div class='second-side-nav-div'>
         <h1 class='h1-second-nav'>INVENTORY MANAGEMENT</h1>
         </div>
+        <a class='second-nav-button' href='dashboard.php' data-file='dashboard.php'>Dashboard</a>
         <button class='second-nav-button' data-file='inventoryManagement/stock_levels.php' onclick='highlightSecondNav(this); loadPHP(this);'>Stock Levels</button>
         <button class='second-nav-button' data-file='inventoryManagement/asset_tracking.php' onclick='highlightSecondNav(this); loadPHP(this);'>Asset Tracking</button>
         <button class='second-nav-button' data-file='inventoryManagement/reorder_alerts.php' onclick='highlightSecondNav(this); loadPHP(this);'>Reorder Alerts</button>
     </div>
     <div id="result" class="body">
-        
+        <div class="container dashboard-container">
+            <div class="row dashboard-row">
+                <div class="col dashboard-col">
+                        <img src="images/stock-level-img.png" alt="stock-image" width="50px" height="50px" />
+                        <h5 class="summary-img">Total Stock Quantity</h3>
+                        <form method="POST" action="">
+                            <label for="filter">Select Item Type: </label>
+                            <select name="filter" id="filter" onchange="this.form.submit()">
+                                <option value="All">All</option>
+                                <option value="Bathroom" <?php echo ($filterType == 'Bathroom') ? 'selected' : ''; ?>>Bathroom</option>
+                                <option value="Bedroom" <?php echo ($filterType == 'Bedroom') ? 'selected' : ''; ?>>Bedroom</option>
+                                <option value="Staff" <?php echo ($filterType == 'Staff') ? 'selected' : ''; ?>>Staff</option>
+                                <option value="Electricity" <?php echo ($filterType == 'Electricity') ? 'selected' : ''; ?>>Electricity</option>
+                                <option value="Water" <?php echo ($filterType == 'Water') ? 'selected' : ''; ?>>Water</option>
+                            </select>
+                        </form>
+                        <span id="totalQuantity">Stocks Total Quantity: <?php echo $totalQuantity; ?></span>
+                </div>
+                <div class="col dashboard-col">
+                <img src="images/stock-img.png" alt="stock-image" width="50px" height="50px"/>
+                <h5 class="summary-img"> Order Tracking</h5>
+                <div class="dashboard-summary">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Asset ID</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    if ($dashboard_result->num_rows > 0) {
+                                        while ($row = $dashboard_result->fetch_assoc()) {
+                                            echo "<tr>
+                                                    <td>{$row['id']}</td>
+                                                    <td>{$row['status']}</td>
+                                                </tr>";
+                                        }
+                                    } else {
+                                        echo "<tr><td colspan='2'>No data found</td></tr>";
+                                    }
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                </div>
+            </div>
+            <div class="row dashboard-row">
+                <div class="col dashboard-col">
+                <img src="images/reorder-alert.png" alt="stock-image" width="50px" height="50px"/>
+                <h5 class="summary-img">Reorder Summary</h1>
+                <div class="dashboard-summary reorder">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Reorder ID</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        // Initialize variables to sum quantity and total price
+                        $total_quantity = 0;
+                        $total_price = 0;
+
+                        // Check if there are any orders
+                        if ($result_orders->num_rows > 0) {
+                            while ($row = $result_orders->fetch_assoc()) {
+                                // Display each row with the order details
+                                echo "<tr>
+                                        <td>{$row['order_id']}</td>
+                                        <td>{$row['status']}</td>
+                                    </tr>";
+                                
+                            }
+                        } else {
+                            // No orders found
+                            echo "<tr><td colspan='4'>No orders found</td></tr>";
+                        }
+                        ?>
+                    </tbody>
+                </table>
+                    </div>
+                </div>
+            </div>
+            <div class="row dashboard-row">
+                <div class="col dashboard-col">
+                    <img src="images/cleaning-img.png" alt="stock-image" width="50px" height="50px" />
+                    <h5 class="summary-img">Cleaning Schedules</h5>
+                    <div class="dashboard-summary">
+                    <?php
+                        // Display the cleaning schedules table
+                        displayCleaningSchedulesTable();
+                    ?>
+                    </div>
+                </div>
+                <div class="col dashboard-col">
+                <img src="images/maintenance-img.png" alt="stock-image" width="50px" height="50px" />
+                <h5 class="summary-img">Maintenance Schedules</h5>
+                        <div class="dashboard-summary">
+                            
+                            <?php
+                                // Display the maintenance schedules table
+                                displayMaintenanceSchedulesTable();
+                            ?>
+                        </div>
+                    </div>
+                <div class="col dashboard-col">
+                <img src="images/incident-img.png" alt="stock-image" width="50px" height="50px"/>
+                <h5>Incident Reports</h5>
+                    <div class="dashboard-summary">
+                        <?php
+                            // Display the incident reports table
+                            displayIncidentReportsTable();
+                        ?>
+                    </div>
+                </div>
+            </div>
+            <div class="row dashboard-row">
+                <div class="col dashboard-col">
+
+                </div>
+            </div>
+        </div>
     </div>
     </div>
     <script src="script.js"></script>
@@ -122,45 +253,21 @@ session_start();
 <script src="js/reorder.js"></script>
 <script src="js/updateSecurity.js"></script>
 <script src="js/chart.js"></script>
-<script>
-    $(document).ready(function() {
-    // Handle individual evaluation update
-    $(document).on('click', '.update-evaluation-btn', function() {
-        var evaluationId = $(this).data('id');
-
-        // Get the updated values from the input fields
-        var evaluationDate = $("input[name='evaluation_date_" + evaluationId + "']").val();
-        var remarks = $("input[name='remarks_" + evaluationId + "']").val();
-        var evaluatorName = $("input[name='evaluator_name_" + evaluationId + "']").val();
-
-        // AJAX request to update the evaluation record
-        $.ajax({
-            url: 'productionSchedulingAndControl/update_evaluation.php', // This file will handle the update logic
-            method: 'POST',
-            data: {
-                evaluation_id: evaluationId,
-                evaluation_date: evaluationDate,
-                remarks: remarks,
-                evaluator_name: evaluatorName
-            },
-            success: function(response) {
-                alert('Evaluation updated successfully!');
-            },
-            error: function(xhr, status, error) {
-                alert('Error: ' + error);
-            }
-        });
-    });
-});
-</script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="js/updateEvaluation.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
     const myChart = new Chart(ctx, {...});
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.bootstrap5.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="dataTable.js"></script>   
+    <script>
+
+
+</script>
+<script>
+    // Get the query string from the URL
+
+</script> 
 </body>
 </html>

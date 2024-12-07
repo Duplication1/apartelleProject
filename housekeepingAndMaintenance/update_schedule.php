@@ -14,7 +14,6 @@ if ($conn->connect_error) {
 }
 
 // Handle POST data
-// Handle POST data
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Update status for a specific room
     if (isset($_POST['id'], $_POST['status'])) {
@@ -25,13 +24,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     elseif (isset($_POST['newDate'])) {
         updateAllCleaningDates($conn, $_POST['newDate']);
         exit; // Ensure no further code is executed after response
+    } else {
+        echo json_encode(['success' => false, 'error' => 'Invalid parameters.']);
     }
+} else {
+    echo json_encode(['success' => false, 'error' => 'Invalid request method.']);
 }
 
 $conn->close();
 
+// Function to update room status
+// Function to update room status
 function updateRoomStatus($conn, $id, $status) {
-    // Valid status options
+    // Validate and sanitize input
+    $id = (int)$id; // Ensure $id is an integer
     $validStatuses = ['In Progress', 'Clean', 'Dirty', 'Out of Order'];
 
     if (!in_array($status, $validStatuses)) {
@@ -45,39 +51,54 @@ function updateRoomStatus($conn, $id, $status) {
     if ($stmt) {
         $stmt->bind_param('si', $status, $id);
         if ($stmt->execute()) {
-            echo json_encode(['success' => true]);
+            if ($stmt->affected_rows > 0) {
+                echo json_encode(['success' => true, 'message' => 'Status updated successfully.']);
+            } else {
+                echo json_encode(['success' => false, 'error' => 'No rows were updated.']);
+            }
         } else {
-            // Optional: Log error (make sure to disable in production or log to a file)
-            error_log('Failed to execute statement: ' . $stmt->error);
-            echo json_encode(['success' => false, 'error' => 'Failed to execute statement']);
+            logError($stmt->error); // Log error
+            echo json_encode(['success' => false, 'error' => 'Failed to execute statement.']);
         }
     } else {
-        // Optional: Log error (make sure to disable in production or log to a file)
-        error_log('Failed to prepare statement: ' . $conn->error);
-        echo json_encode(['success' => false, 'error' => 'Failed to prepare statement']);
+        logError($conn->error); // Log error
+        echo json_encode(['success' => false, 'error' => 'Failed to prepare statement.']);
     }
 }
 
-
+// Function to update all cleaning dates
 function updateAllCleaningDates($conn, $newDate) {
+    // Sanitize the new date input
+    $newDate = htmlspecialchars(strip_tags($newDate));
+
+    if (empty($newDate)) {
+        echo json_encode(['success' => false, 'error' => 'Invalid date.']);
+        exit;
+    }
+
     $sql = "UPDATE cleaning_schedules SET cleaning_date = ?";
     $stmt = $conn->prepare($sql);
 
     if ($stmt) {
         $stmt->bind_param('s', $newDate);
         if ($stmt->execute()) {
-            // Redirect back to the previous page
-            header("Location: " . $_SERVER['HTTP_REFERER']);
-            exit; // Stop further execution
+            if ($stmt->affected_rows > 0) {
+                echo json_encode(['success' => true, 'message' => 'All cleaning dates updated successfully.']);
+                // Redirect back to the previous page
+                header("Location: " . $_SERVER['HTTP_REFERER']);
+                exit;  // Stop further script execution after the redirect
+            } else {
+                echo json_encode(['success' => false, 'error' => 'No rows were updated.']);
+            }
         } else {
-            // Optional: Log error (make sure to disable in production or log to a file)
-            error_log('Failed to execute statement: ' . $stmt->error);
-            echo json_encode(['success' => false, 'error' => 'Failed to execute statement']);
+            logError($stmt->error); // Log error
+            echo json_encode(['success' => false, 'error' => 'Failed to execute statement.']);
         }
     } else {
-        // Optional: Log error (make sure to disable in production or log to a file)
-        error_log('Failed to prepare statement: ' . $conn->error);
-        echo json_encode(['success' => false, 'error' => 'Failed to prepare statement']);
+        logError($conn->error); // Log error
+        echo json_encode(['success' => false, 'error' => 'Failed to prepare statement.']);
     }
 }
+
+
 ?>
